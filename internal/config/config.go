@@ -16,8 +16,18 @@ type Config struct {
 	PrivatePort string `envconfig:"PRIVATE_PORT" required:"true"`
 	PublicPort  string `envconfig:"PUBLIC_PORT" required:"true"`
 
+	// Index
+	IndexCfg        *IndexConfig
+	IndexConfigPath string `envconfig:"INDEX_CONFIG_PATH" required:"true"`
+
 	// filter
-	DateLayout string `envconfig:"DATE_LAYOUT" required:"true"`
+	DateLayout       string `envconfig:"DATE_LAYOUT" required:"true"`
+	FilterConfigPath string `envconfig:"FILTER_CONFIG_PATH" required:"true"`
+	FilterCfg        []FilterConfig
+
+	// ranking
+	RankCfg        *RankConfig
+	RankConfigPath string `envconfig:"RANK_CONFIG_PATH" required:"true"`
 }
 
 func LoadConfig() *Config {
@@ -36,6 +46,21 @@ func LoadConfig() *Config {
 		log.Fatalln("[CONFIG][ERROR]:", err)
 	}
 
+	cfg.IndexCfg, err = LoadIndexConfig(cfg.IndexConfigPath)
+	if err != nil {
+		log.Fatalln("[CONFIG][ERROR] error while loading index config:", err)
+	}
+
+	cfg.FilterCfg, err = LoadFilterConfig(cfg.FilterConfigPath)
+	if err != nil {
+		log.Fatalln("[CONFIG][ERROR] error while loading filter config:", err)
+	}
+
+	cfg.RankCfg, err = LoadRankConfig(cfg.RankConfigPath)
+	if err != nil {
+		log.Fatalln("[CONFIG][ERROR] error while loading rank config:", err)
+	}
+
 	cfg.PrintConfig()
 
 	return &cfg
@@ -44,8 +69,19 @@ func LoadConfig() *Config {
 func (c *Config) PrintConfig() {
 	log.Println("===================== CONFIG =====================")
 	log.Println("TEST_ENV...................... ", c.TestEnv)
+	log.Println("_____________INDEX____________ ")
 	log.Println("INDEX_PATH.................... ", c.IndexPath)
 	log.Println("INDEX_NAME.................... ", c.IndexName)
+	log.Println("INDEX_CONFIG_PATH............. ", c.IndexConfigPath)
+	log.Println("_____________FILTER____________ ")
+	log.Println("FILTER_CONFIG_PATH............. ", c.FilterConfigPath)
+	log.Println("DATE_LAYOUT.................... ", c.DateLayout)
+	log.Println("______________RANK_____________ ")
+	log.Println("RANK_CONFIG_PATH............... ", c.RankConfigPath)
+	log.Println("_____________SERVER____________ ")
+	log.Println("PRIVATE_PORT................... ", c.PrivatePort)
+	log.Println("PUBLIC_PORT.................... ", c.PublicPort)
+
 	log.Println("==================================================")
 }
 

@@ -12,10 +12,10 @@ const (
 )
 
 type RankingClient struct {
-	cfg config.RankConfig
+	cfg *config.RankConfig
 }
 
-func NewRankingClient(cfg config.RankConfig) *RankingClient {
+func New(cfg *config.RankConfig) *RankingClient {
 	return &RankingClient{cfg: cfg}
 }
 

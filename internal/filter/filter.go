@@ -12,20 +12,20 @@ import (
 )
 
 type FilterClient struct {
-	cfg config.Config
+	cfg *config.Config
 
 	FiltersConfig []config.FilterConfig `json:"filters"`
 
 	filters map[string]config.FilterConfig
 }
 
-func NewFilterClient(cfg config.Config, fCfg []config.FilterConfig) *FilterClient {
+func New(cfg *config.Config) *FilterClient {
 	filters := make(map[string]config.FilterConfig)
-	for _, f := range fCfg {
+	for _, f := range cfg.FilterCfg {
 		filters[f.Category] = f
 	}
 
-	return &FilterClient{cfg: cfg, FiltersConfig: fCfg, filters: filters}
+	return &FilterClient{cfg: cfg, FiltersConfig: cfg.FilterCfg, filters: filters}
 }
 
 // ApplyFilters добавляет фильтры в запрос Bleve
@@ -41,7 +41,7 @@ func (fc *FilterClient) ApplyFilters(filters request.FilterRequest) (*query.Bool
 	// range filters
 	rangeFilters := make([]query.Query, 0, len(filters.Range))
 	for _, r := range filters.Range {
-		if r.Type == "date" { // todo
+		if r.Type == "date" {
 			// Преобразуем FromValue и ToValue в time.Time
 			fromDate, errFrom := fc.parseDate(r.FromValue)
 			toDate, errTo := fc.parseDate(r.ToValue)

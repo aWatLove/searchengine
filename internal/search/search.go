@@ -10,14 +10,13 @@ import (
 )
 
 type SearchClient struct {
-	indxCli index.Index
-
-	rankCli   rank.RankingClient
-	filterCli filter.FilterClient
+	indxCli   *index.Index
+	rankCli   *rank.RankingClient
+	filterCli *filter.FilterClient
 }
 
-func NewSearchClient(indxCli index.Index, rankCli rank.RankingClient, filterCli filter.FilterClient) SearchClient {
-	return SearchClient{
+func NewSearchClient(indxCli *index.Index, rankCli *rank.RankingClient, filterCli *filter.FilterClient) *SearchClient {
+	return &SearchClient{
 		indxCli:   indxCli,
 		rankCli:   rankCli,
 		filterCli: filterCli,

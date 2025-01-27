@@ -19,8 +19,7 @@ type Index struct {
 	mu *sync.RWMutex
 }
 
-func New(cfg *config.Config, idxCfg *config.IndexConfig) *Index {
-
+func New(cfg *config.Config) *Index {
 	bleveIndex, err := bleve.Open(fmt.Sprintf("%s%s", cfg.IndexPath, cfg.IndexName))
 	if err != nil {
 		log.Println("[INDEX][ERROR] error while opening:", err)
@@ -29,7 +28,7 @@ func New(cfg *config.Config, idxCfg *config.IndexConfig) *Index {
 		docMapping := bleve.NewDocumentMapping()
 
 		// Создаем поля на основе конфигурации
-		for _, field := range idxCfg.Fields {
+		for _, field := range cfg.IndexCfg.Fields {
 			fieldMapping := bleve.NewTextFieldMapping()
 			fieldMapping.Index = field.Searchable
 
@@ -55,6 +54,7 @@ func New(cfg *config.Config, idxCfg *config.IndexConfig) *Index {
 	return &Index{
 		cfg:    cfg,
 		bIndex: bleveIndex,
+		iCfg:   cfg.IndexCfg,
 		mu:     new(sync.RWMutex),
 	}
 }

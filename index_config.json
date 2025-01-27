@@ -1,0 +1,64 @@
+{
+  "indexName": "internet_shop",
+  "category": [
+    "Обувь",
+    "игрушки",
+    "Обувь",
+    "Женское",
+    "Мужское"
+  ],
+  "fields": [
+    {
+      "name": "title",
+      "type": "string",
+      "searchable": true
+    },
+    {
+      "name": "seller",
+      "type": "string",
+      "searchable": true,
+      "filterable": true
+    },
+    {
+      "name": "brand",
+      "type": "string",
+      "searchable": true,
+      "filterable": true
+    },
+    {
+      "name": "color",
+      "type": "string",
+      "searchable": true,
+      "filterable": true
+    },
+    {
+      "name": "price",
+      "type": "numeric",
+      "searchable": false,
+      "filterable": true,
+      "sortable": true
+    },
+    {
+      "name": "count",
+      "type": "numeric",
+      "searchable": false,
+      "filterable": false,
+      "sortable": false
+    },
+    {
+      "name": "sex",
+      "type": "string",
+      "searchable": false,
+      "filterable": true,
+      "sortable": false
+    }
+  ,
+    {
+      "name": "top-seller",
+      "type": "bool",
+      "searchable": false,
+      "filterable": true,
+      "sortable": false
+    }
+  ]
+}

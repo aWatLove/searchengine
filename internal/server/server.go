@@ -16,7 +16,7 @@ type Server struct {
 	HttpServer *fasthttp.Server
 	Debug      *http.Server
 	Cfg        *config.Config
-	IndexCli   index.Index
+	IndexCli   *index.Index
 	SearchCli  *search.SearchClient
 }
 
@@ -24,7 +24,7 @@ type ServerPrivate struct {
 	HttpServer *http.Server
 }
 
-func New(cfg *config.Config, indxCli index.Index, searchCli *search.SearchClient) *Server {
+func New(cfg *config.Config, indxCli *index.Index, searchCli *search.SearchClient) *Server {
 	return &Server{
 		HttpServer: new(fasthttp.Server),
 		Debug: &http.Server{
