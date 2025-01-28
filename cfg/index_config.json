@@ -33,14 +33,14 @@
     },
     {
       "name": "price",
-      "type": "numeric",
+      "type": "number",
       "searchable": false,
       "filterable": true,
       "sortable": true
     },
     {
       "name": "count",
-      "type": "numeric",
+      "type": "number",
       "searchable": false,
       "filterable": false,
       "sortable": false

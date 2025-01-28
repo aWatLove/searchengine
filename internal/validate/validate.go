@@ -36,6 +36,9 @@ func validateFieldType(expectedType string, value interface{}) bool {
 	case "number":
 		_, ok := value.(float64) // JSON числа парсятся как float64
 		return ok
+	case "bool":
+		_, ok := value.(bool) // JSON числа парсятся как bool
+		return ok
 	default:
 		return false
 	}

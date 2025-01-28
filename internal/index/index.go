@@ -17,6 +17,8 @@ type Index struct {
 	bIndex bleve.Index
 
 	mu *sync.RWMutex
+
+	lastIndex uint64
 }
 
 func New(cfg *config.Config) *Index {
@@ -76,6 +78,37 @@ func (i *Index) AddDocument(docID string, document map[string]interface{}) error
 	}
 
 	// Добавляем документ в индекс
+	i.mu.Lock()
+	i.mu.Unlock()
+	err = i.bIndex.Index(docID, document)
+	if err != nil {
+		return fmt.Errorf("ошибка добавления документа в индекс: %v", err)
+	}
+
+	fmt.Printf("Документ с ID '%s' успешно добавлен в индекс.\n", docID)
+	return nil
+}
+
+func (i *Index) Delete(docID string) error {
+	i.mu.Lock()
+	defer i.mu.Unlock()
+	return i.bIndex.Delete(docID)
+}
+
+func (i *Index) Update(docID string, document map[string]interface{}) error {
+	// Валидация документа
+	err := validate.ValidateDocument(i.iCfg, document)
+	if err != nil {
+		return fmt.Errorf("документ не прошел валидацию: %v", err)
+	}
+
+	err = i.Delete(docID)
+	if err != nil {
+		log.Printf("[INDEX][ERROR] error while deleting docID: '%s' err:\n", docID, err)
+	}
+	// Добавляем документ в индекс
+	i.mu.Lock()
+	i.mu.Unlock()
 	err = i.bIndex.Index(docID, document)
 	if err != nil {
 		return fmt.Errorf("ошибка добавления документа в индекс: %v", err)

@@ -29,6 +29,8 @@ func (sc *SearchClient) SearchIndex(queryText string, filters map[string]interfa
 	query := bleve.NewMatchQuery(queryText)
 	searchRequest := bleve.NewSearchRequest(query)
 
+	searchRequest.Fields = []string{"*"} // "*" означает вернуть все поля документа
+
 	// Добавляем фильтры (если есть)
 	for field, value := range filters {
 		termQuery := bleve.NewTermQuery(fmt.Sprintf("%v", value))

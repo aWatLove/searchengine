@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"log"
@@ -15,6 +16,8 @@ type Config struct {
 
 	PrivatePort string `envconfig:"PRIVATE_PORT" required:"true"`
 	PublicPort  string `envconfig:"PUBLIC_PORT" required:"true"`
+
+	CfgDirPath string `envconfig:"CONFIG_DIR_PATH" required:"true"`
 
 	// Index
 	IndexCfg        *IndexConfig
@@ -46,17 +49,17 @@ func LoadConfig() *Config {
 		log.Fatalln("[CONFIG][ERROR]:", err)
 	}
 
-	cfg.IndexCfg, err = LoadIndexConfig(cfg.IndexConfigPath)
+	cfg.IndexCfg, err = LoadIndexConfig(fmt.Sprintf("%s%s", cfg.CfgDirPath, cfg.IndexConfigPath))
 	if err != nil {
 		log.Fatalln("[CONFIG][ERROR] error while loading index config:", err)
 	}
 
-	cfg.FilterCfg, err = LoadFilterConfig(cfg.FilterConfigPath)
+	cfg.FilterCfg, err = LoadFilterConfig(fmt.Sprintf("%s%s", cfg.CfgDirPath, cfg.FilterConfigPath))
 	if err != nil {
 		log.Fatalln("[CONFIG][ERROR] error while loading filter config:", err)
 	}
 
-	cfg.RankCfg, err = LoadRankConfig(cfg.RankConfigPath)
+	cfg.RankCfg, err = LoadRankConfig(fmt.Sprintf("%s%s", cfg.CfgDirPath, cfg.RankConfigPath))
 	if err != nil {
 		log.Fatalln("[CONFIG][ERROR] error while loading rank config:", err)
 	}
