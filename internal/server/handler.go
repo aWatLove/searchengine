@@ -146,7 +146,7 @@ func (s *Server) FiltersByCategory(method string, args *fasthttp.Args) ([]byte, 
 	return json.Marshal(&filters)
 }
 
-func (s *Server) GetAllCategories(method string, args *fasthttp.Args) ([]byte, error) {
+func (s *Server) GetAllCategories(method string) ([]byte, error) {
 	if method != http.MethodGet {
 		return nil, errMethodNotAllowed
 	}

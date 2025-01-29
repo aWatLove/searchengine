@@ -69,7 +69,7 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 	case FILTERS_BY_CATEGORY:
 		resp, err = s.FiltersByCategory(method, ctx.QueryArgs())
 	case FILTERS_GET_ALL_CATEGORY:
-		resp, err = s.GetAllCategories(method, ctx.QueryArgs())
+		resp, err = s.GetAllCategories(method)
 
 	default:
 		err = errNotFound
