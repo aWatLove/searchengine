@@ -46,7 +46,7 @@ func main() {
 
 	// ====== Server ======
 	log.Println("[SERVICE] START SERVER")
-	srv := server.New(cfg, indexCLi, searchCli)
+	srv := server.New(cfg, indexCLi, searchCli, filterCli)
 	log.Println("[SERVER] Start")
 	srv.Start()
 	// ====================

@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"searchengine/internal/config"
+	"searchengine/internal/filter"
 	"searchengine/internal/index"
 	"searchengine/internal/search"
 )
@@ -18,13 +19,14 @@ type Server struct {
 	Cfg        *config.Config
 	IndexCli   *index.Index
 	SearchCli  *search.SearchClient
+	filterCli  *filter.FilterClient
 }
 
 type ServerPrivate struct {
 	HttpServer *http.Server
 }
 
-func New(cfg *config.Config, indxCli *index.Index, searchCli *search.SearchClient) *Server {
+func New(cfg *config.Config, indxCli *index.Index, searchCli *search.SearchClient, filterCli *filter.FilterClient) *Server {
 	return &Server{
 		HttpServer: new(fasthttp.Server),
 		Debug: &http.Server{
@@ -33,6 +35,7 @@ func New(cfg *config.Config, indxCli *index.Index, searchCli *search.SearchClien
 		Cfg:       cfg,
 		IndexCli:  indxCli,
 		SearchCli: searchCli,
+		filterCli: filterCli,
 	}
 }
 

@@ -14,6 +14,11 @@
       "field": "seller",
       "weight": 2,
       "boost_type": "catboost"
+    },
+    {
+      "field": "color",
+      "weight": 5,
+      "boost_type": "catboost"
     }
   ]
 }

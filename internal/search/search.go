@@ -65,7 +65,7 @@ func (sc *SearchClient) SearchIndex(queryText string, filters map[string]interfa
 }
 
 // AdvancedSearch выполняет поиск с фильтрами и ранжированием
-func (sc *SearchClient) AdvancedSearch(queryText string, filters request.FilterRequest) ([]map[string]interface{}, error) {
+func (sc *SearchClient) AdvancedSearch(queryText string, filters *request.FilterRequest, sortFields []string) ([]map[string]interface{}, error) {
 	mainQuery := bleve.NewMatchQuery(queryText)
 
 	// Применяем фильтры
@@ -75,10 +75,14 @@ func (sc *SearchClient) AdvancedSearch(queryText string, filters request.FilterR
 	}
 
 	combinedQuery := bleve.NewBooleanQuery()
-	combinedQuery.AddMustNot(mainQuery)
-	combinedQuery.AddMustNot(filtersQuery)
+	combinedQuery.AddMust(mainQuery)
+	if filtersQuery != nil {
+		combinedQuery.AddMust(filtersQuery)
+	}
 
 	searchRequest := bleve.NewSearchRequest(combinedQuery)
+
+	searchRequest.Fields = []string{"*"} // "*" означает вернуть все поля документа
 
 	// Применяем ранжирование
 	err = sc.rankCli.ApplyRanking(searchRequest)

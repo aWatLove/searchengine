@@ -19,6 +19,10 @@ const (
 	SEARCH_SIMPLE_PATH = "/simpleSearch"
 	SEARCH_PATH        = "/search"
 
+	// FILTERS
+	FILTERS_BY_CATEGORY      = "/filtersByCategory"
+	FILTERS_GET_ALL_CATEGORY = "/category"
+
 	V1 = "/api/v1"
 )
 
@@ -60,6 +64,12 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 		resp, err = s.Search(method, ctx.QueryArgs())
 	case SEARCH_SIMPLE_PATH:
 		resp, err = s.SimpleSearch(method, ctx.QueryArgs())
+
+	// FILTERS
+	case FILTERS_BY_CATEGORY:
+		resp, err = s.FiltersByCategory(method, ctx.QueryArgs())
+	case FILTERS_GET_ALL_CATEGORY:
+		resp, err = s.GetAllCategories(method, ctx.QueryArgs())
 
 	default:
 		err = errNotFound

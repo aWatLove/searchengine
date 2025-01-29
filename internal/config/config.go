@@ -71,7 +71,7 @@ func LoadConfig() *Config {
 
 func (c *Config) PrintConfig() {
 	log.Println("===================== CONFIG =====================")
-	log.Println("TEST_ENV...................... ", c.TestEnv)
+	log.Println("CONFIG_DIR_PATH............... ", c.CfgDirPath)
 	log.Println("_____________INDEX____________ ")
 	log.Println("INDEX_PATH.................... ", c.IndexPath)
 	log.Println("INDEX_NAME.................... ", c.IndexName)
@@ -157,8 +157,7 @@ type FilterConfig struct {
 }
 
 type BoolSelectFilter struct {
-	Name    string `json:"name"`
-	Default bool   `json:"default"`
+	Name string `json:"name"`
 }
 
 type RangeFilter struct {

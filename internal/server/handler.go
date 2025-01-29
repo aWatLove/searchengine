@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/valyala/fasthttp"
 	"net/http"
+	"searchengine/internal/common/request"
 )
 
 var (
@@ -61,7 +62,7 @@ func (s *Server) UpdateDocument(method string, body []byte, args *fasthttp.Args)
 }
 
 func (s *Server) DeleteDocument(method string, args *fasthttp.Args) error {
-	if method != http.MethodPost {
+	if method != http.MethodDelete {
 		return errMethodNotAllowed
 	}
 
@@ -88,10 +89,18 @@ func (s *Server) Search(method string, args *fasthttp.Args) ([]byte, error) { //
 		return nil, errors.New("query is empty")
 	}
 
-	filters := make(map[string]interface{}, 0) //todo
-	sorts := make([]string, 0)                 //todo
+	var filters *request.FilterRequest //todo
+	filtersData := args.Peek("filters")
+	if len(filtersData) != 0 {
+		err := json.Unmarshal(filtersData, &filters)
+		if err != nil {
+			return nil, err
+		}
+	}
 
-	resp, err := s.SearchCli.SearchIndex(query, filters, sorts)
+	sorts := make([]string, 0) //todo
+
+	resp, err := s.SearchCli.AdvancedSearch(query, filters, sorts)
 	if err != nil {
 		return nil, err
 	}
@@ -118,4 +127,31 @@ func (s *Server) SimpleSearch(method string, args *fasthttp.Args) ([]byte, error
 	}
 
 	return json.Marshal(&resp)
+}
+
+func (s *Server) FiltersByCategory(method string, args *fasthttp.Args) ([]byte, error) {
+	if method != http.MethodGet {
+		return nil, errMethodNotAllowed
+	}
+
+	category := string(args.Peek("category"))
+	if category == "" {
+		return nil, errors.New("category is empty")
+	}
+
+	filters, ok := s.filterCli.GetByCategory(category)
+	if !ok {
+		return nil, errNotFound
+	}
+	return json.Marshal(&filters)
+}
+
+func (s *Server) GetAllCategories(method string, args *fasthttp.Args) ([]byte, error) {
+	if method != http.MethodGet {
+		return nil, errMethodNotAllowed
+	}
+
+	category := s.filterCli.GetAllCategories()
+
+	return json.Marshal(&category)
 }
