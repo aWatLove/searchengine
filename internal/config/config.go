@@ -12,7 +12,7 @@ import (
 type Config struct {
 	TestEnv   string `envconfig:"TEST_ENV" required:"true"`
 	IndexPath string `envconfig:"INDEX_PATH" required:"true"`
-	IndexName string `envconfig:"INDEX_NAME" required:"true"`
+	//IndexName string `envconfig:"INDEX_NAME" required:"true"`
 
 	PrivatePort string `envconfig:"PRIVATE_PORT" required:"true"`
 	PublicPort  string `envconfig:"PUBLIC_PORT" required:"true"`
@@ -74,7 +74,7 @@ func (c *Config) PrintConfig() {
 	log.Println("CONFIG_DIR_PATH............... ", c.CfgDirPath)
 	log.Println("_____________INDEX____________ ")
 	log.Println("INDEX_PATH.................... ", c.IndexPath)
-	log.Println("INDEX_NAME.................... ", c.IndexName)
+	log.Println("INDEX_NAME.................... ", c.IndexCfg.IndexName)
 	log.Println("INDEX_CONFIG_PATH............. ", c.IndexConfigPath)
 	log.Println("_____________FILTER____________ ")
 	log.Println("FILTER_CONFIG_PATH............. ", c.FilterConfigPath)
@@ -130,6 +130,7 @@ type BoostConfig struct {
 	Field     string  `json:"field"`
 	Weight    float64 `json:"weight"`
 	BoostType string  `json:"boost_type"`
+	Formula   string  `json:"formula,omitempty"`
 }
 
 // LoadConfig загружает конфигурацию индекса из файла

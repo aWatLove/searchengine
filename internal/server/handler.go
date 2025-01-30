@@ -7,6 +7,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"net/http"
 	"searchengine/internal/common/request"
+	"searchengine/internal/validate"
 )
 
 var (
@@ -98,9 +99,15 @@ func (s *Server) Search(method string, args *fasthttp.Args) ([]byte, error) { //
 		}
 	}
 
-	sorts := make([]string, 0) //todo
+	sortField := string(args.Peek("sortField"))
+	if sortField != "" {
+		if !validate.ValidateSortField(s.Cfg, sortField) {
+			return nil, errors.New("invalid sort field")
+		}
+	}
+	sortOrder := string(args.Peek("sortOrder"))
 
-	resp, err := s.SearchCli.AdvancedSearch(query, filters, sorts)
+	resp, err := s.SearchCli.AdvancedSearch(query, filters, sortField, sortOrder)
 	if err != nil {
 		return nil, err
 	}

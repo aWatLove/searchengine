@@ -1,0 +1,53 @@
+{
+  "indexName": "articles_habr",
+  "category": [
+    "IT-технологии",
+    "Наука",
+    "Популистика"
+  ],
+  "fields": [
+    {
+      "name": "title",
+      "type": "string",
+      "searchable": true
+    },
+    {
+      "name": "annotation",
+      "type": "string",
+      "searchable": true,
+      "filterable": false
+    },
+    {
+      "name": "content",
+      "type": "string",
+      "searchable": true,
+      "filterable": false
+    },
+    {
+      "name": "author",
+      "type": "string",
+      "searchable": true,
+      "filterable": false
+    },
+    {
+      "name": "article_type",
+      "type": "string",
+      "searchable": true,
+      "filterable": true
+    },
+    {
+      "name": "created_at",
+      "type": "timestamp",
+      "searchable": false,
+      "filterable": true,
+      "sortable": true
+    },
+    {
+      "name": "rating",
+      "type": "number",
+      "searchable": false,
+      "filterable": true,
+      "sortable": true
+    }
+  ]
+}

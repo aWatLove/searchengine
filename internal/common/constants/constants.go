@@ -1,3 +1,6 @@
 package constants
 
-const ()
+const (
+	SortOrderAsc  = "asc"
+	SortOrderDesc = "desc"
+)

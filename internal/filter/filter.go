@@ -1,7 +1,6 @@
 package filter
 
 import (
-	"fmt"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/search/query"
 	"log"
@@ -119,7 +118,7 @@ func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (*query.Boo
 		// bool-select filters
 		boolFilters := make([]query.Query, 0, len(filters.BoolSelect))
 		for _, bs := range filters.BoolSelect {
-			bsf := bleve.NewTermQuery(fmt.Sprintf("%v", bs.Value))
+			bsf := bleve.NewBoolFieldQuery(bs.Value)
 			bsf.SetField(bs.Name)
 			boolFilters = append(boolFilters, bsf)
 		}
@@ -144,14 +143,6 @@ func parseNumeric(value string) *float64 {
 func (fc *FilterClient) parseDate(dateStr string) (time.Time, error) {
 	layout := fc.cfg.DateLayout
 	return time.Parse(layout, dateStr)
-}
-
-func toStringSlice(input []interface{}) []string {
-	var result []string
-	for _, v := range input {
-		result = append(result, v.(string))
-	}
-	return result
 }
 
 func (fc *FilterClient) GetByCategory(category string) (config.FilterConfig, bool) {

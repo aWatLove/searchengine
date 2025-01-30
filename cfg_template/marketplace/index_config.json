@@ -1,8 +1,8 @@
 {
-  "indexName": "internet_shop",
+  "indexName": "example.shop",
   "category": [
     "Обувь",
-    "игрушки",
+    "Игрушки",
     "Обувь",
     "Женское",
     "Мужское"
@@ -43,7 +43,7 @@
       "type": "number",
       "searchable": false,
       "filterable": false,
-      "sortable": false
+      "sortable": true
     },
     {
       "name": "sex",

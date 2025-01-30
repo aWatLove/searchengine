@@ -22,7 +22,7 @@ type Index struct {
 }
 
 func New(cfg *config.Config) *Index {
-	bleveIndex, err := bleve.Open(fmt.Sprintf("%s%s", cfg.IndexPath, cfg.IndexName))
+	bleveIndex, err := bleve.Open(fmt.Sprintf("%s%s", cfg.IndexPath, cfg.IndexCfg.IndexName))
 	if err != nil {
 		log.Println("[INDEX][ERROR] error while opening:", err)
 
@@ -47,7 +47,7 @@ func New(cfg *config.Config) *Index {
 
 		mapping.AddDocumentMapping("document", docMapping)
 
-		bleveIndex, err = bleve.New(fmt.Sprintf("%s%s", cfg.IndexPath, cfg.IndexName), mapping)
+		bleveIndex, err = bleve.New(fmt.Sprintf("%s%s", cfg.IndexPath, cfg.IndexCfg.IndexName), mapping)
 		if err != nil {
 			log.Fatalln("[INDEX][ERROR] error while creating:", err)
 		}

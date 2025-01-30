@@ -43,3 +43,12 @@ func validateFieldType(expectedType string, value interface{}) bool {
 		return false
 	}
 }
+
+func ValidateSortField(cfg *config.Config, sortField string) bool { // todo в структуру Validator'а, создать нужные мапы, которые будут инициализироваться при старте движка
+	for _, f := range cfg.IndexCfg.Fields {
+		if f.Name == sortField {
+			return f.Sortable
+		}
+	}
+	return false
+}

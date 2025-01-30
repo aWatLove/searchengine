@@ -1,0 +1,122 @@
+[
+  {
+    "category": "Обувь",
+    "range": [
+      {
+        "name": "price",
+        "type": "int",
+        "from_value": "100",
+        "to_value": "10000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "adidas",
+          "nike",
+          "reebok"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "white",
+          "black",
+          "red",
+          "blue"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "sex",
+        "value": [
+          "unisex",
+          "male",
+          "female"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Женское",
+    "range": [
+      {
+        "name": "price",
+        "type": "int",
+        "from_value": "1",
+        "to_value": "100000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "gucci",
+          "sanlaran",
+          "chanel"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "white",
+          "black",
+          "red",
+          "blue"
+        ]
+      }
+    ],
+    "one-select": [],
+    "bool-select": []
+  },
+  {
+    "category": "Мужское",
+    "range": [
+      {
+        "name": "price",
+        "type": "int",
+        "from_value": "100",
+        "to_value": "10000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "adidas",
+          "nike",
+          "reebok"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "красная",
+          "синяя",
+          "черная"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "sex",
+        "value": [
+          "унисекс",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  }
+]
