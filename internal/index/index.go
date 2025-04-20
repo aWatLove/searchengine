@@ -3,6 +3,7 @@ package index
 import (
 	"fmt"
 	"github.com/blevesearch/bleve/v2"
+	mapping2 "github.com/blevesearch/bleve/v2/mapping"
 	"log"
 	"searchengine/internal/config"
 	"searchengine/internal/validate"
@@ -31,7 +32,15 @@ func New(cfg *config.Config) *Index {
 
 		// Создаем поля на основе конфигурации
 		for _, field := range cfg.IndexCfg.Fields {
-			fieldMapping := bleve.NewTextFieldMapping()
+			var fieldMapping *mapping2.FieldMapping
+
+			if field.Type == "timestamp" {
+				fieldMapping = bleve.NewDateTimeFieldMapping()
+			} else {
+				fieldMapping = bleve.NewTextFieldMapping()
+			}
+			//fieldMapping := bleve.NewTextFieldMapping()
+
 			fieldMapping.Index = field.Searchable
 
 			if field.Filterable {
@@ -120,4 +129,37 @@ func (i *Index) Update(docID string, document map[string]interface{}) error {
 
 func (i *Index) Search(req *bleve.SearchRequest) (*bleve.SearchResult, error) {
 	return i.bIndex.Search(req)
+}
+
+func (i *Index) GetAllDoc() ([]map[string]interface{}, error) {
+	// Создаем запрос, который соответствует всем документам
+	query := bleve.NewMatchAllQuery()
+
+	// Настраиваем параметры поиска
+	searchRequest := bleve.NewSearchRequest(query)
+	searchRequest.Size = 10000           // Максимальное количество документов на странице
+	searchRequest.Fields = []string{"*"} // Запрашиваем все поля
+
+	var results []map[string]interface{}
+
+	for {
+		// Выполняем поиск
+		searchResult, err := i.bIndex.Search(searchRequest)
+		if err != nil {
+			return nil, err
+		}
+
+		// Собираем результаты
+		for _, hit := range searchResult.Hits {
+			results = append(results, hit.Fields)
+		}
+
+		// Проверяем, есть ли еще документы
+		if searchResult.Total <= uint64(searchRequest.From+searchRequest.Size) {
+			break
+		}
+		searchRequest.From += searchRequest.Size
+	}
+
+	return results, nil
 }

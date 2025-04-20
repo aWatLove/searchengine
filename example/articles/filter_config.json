@@ -3,7 +3,7 @@
     "category": "Наука",
     "range": [
       {
-        "name": "create_date",
+        "name": "created_at",
         "type": "date",
         "from_value": "2010-01-01",
         "to_value": "2025-01-31"
@@ -11,7 +11,7 @@
     ],
     "multi-select": [
       {
-        "name": "тематика",
+        "name": "theme",
         "value": [
           "физика",
           "химия",
@@ -19,7 +19,7 @@
         ]
       },
       {
-        "name": "тип статьи",
+        "name": "article_type",
         "value": [
           "научная",
           "популистика",
@@ -28,51 +28,42 @@
       }
     ],
     "one-select": [
-      {
-        "name": "sex",
-        "value": [
-          "unisex",
-          "male",
-          "female"
-        ]
-      }
     ],
     "bool-select": [
-      {
-        "name": "top seller"
-      }
     ]
   },
   {
     "category": "IT-технологии",
     "range": [
       {
-        "name": "price",
-        "type": "int",
-        "from_value": "1",
-        "to_value": "100000"
+        "name": "created_at",
+        "type": "date",
+        "from_value": "2010-01-01",
+        "to_value": "2025-01-31"
       }
     ],
     "multi-select": [
       {
-        "name": "brand",
+        "name": "theme",
         "value": [
-          "gucci",
-          "sanlaran",
-          "chanel"
+          "яп",
+          "архитектура",
+          "программирование",
+          "облачные технологии"
         ]
       },
       {
-        "name": "color",
+        "name": "article_type",
         "value": [
-          "white",
-          "black",
-          "red",
-          "blue"
+          "научная",
+          "популистика",
+          "журнал"
         ]
       }
     ],
-    "one-select": [],
-    "bool-select": []
+    "one-select": [
+    ],
+    "bool-select": [
+    ]
   }
 ]

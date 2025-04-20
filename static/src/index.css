@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn-loading {
+        @apply relative cursor-wait;
+    }
+    .btn-loading::after {
+        @apply absolute inset-0 flex items-center justify-center;
+        content: "⌛";
+    }
+}

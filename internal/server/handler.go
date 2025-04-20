@@ -15,15 +15,15 @@ var (
 	errMethodNotAllowed = errors.New("method not allowed")
 )
 
-func (s *Server) AddDocumentToIndex(method string, body []byte, args *fasthttp.Args) error {
+func (s *Server) AddDocumentToIndex(method string, body []byte, args *fasthttp.Args) ([]byte, error) {
 	if method != http.MethodPost {
-		return errMethodNotAllowed
+		return nil, errMethodNotAllowed
 	}
 
 	var doc map[string]interface{}
 	err := json.Unmarshal(body, &doc)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	docID := string(args.Peek("docId"))
@@ -32,10 +32,10 @@ func (s *Server) AddDocumentToIndex(method string, body []byte, args *fasthttp.A
 	}
 	err = s.IndexCli.AddDocument(docID, doc)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return []byte(docID), nil
 }
 
 func (s *Server) UpdateDocument(method string, body []byte, args *fasthttp.Args) error {
@@ -80,7 +80,20 @@ func (s *Server) DeleteDocument(method string, args *fasthttp.Args) error {
 	return nil
 }
 
-func (s *Server) Search(method string, args *fasthttp.Args) ([]byte, error) { //todo
+func (s *Server) getAllDoc(method string, args *fasthttp.Args) ([]byte, error) {
+	if method != http.MethodGet {
+		return nil, errMethodNotAllowed
+	}
+
+	resp, err := s.IndexCli.GetAllDoc()
+	if err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(resp)
+}
+
+func (s *Server) Search(method string, args *fasthttp.Args) ([]byte, error) {
 	if method != http.MethodGet {
 		return nil, errMethodNotAllowed
 	}
@@ -90,7 +103,7 @@ func (s *Server) Search(method string, args *fasthttp.Args) ([]byte, error) { //
 		return nil, errors.New("query is empty")
 	}
 
-	var filters *request.FilterRequest //todo
+	var filters *request.FilterRequest
 	filtersData := args.Peek("filters")
 	if len(filtersData) != 0 {
 		err := json.Unmarshal(filtersData, &filters)

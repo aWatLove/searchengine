@@ -62,7 +62,7 @@ func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (*query.Boo
 				}
 
 				// Создаем DateRangeQuery
-				filterDate := bleve.NewDateRangeQuery(fromDate, toDate)
+				filterDate := bleve.NewDateRangeQuery(fromDate, toDate) //todo
 				filterDate.SetField(r.Name)
 
 				// Добавляем в список фильтров
@@ -76,7 +76,7 @@ func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (*query.Boo
 			}
 
 		}
-		filterRates := bleve.NewDisjunctionQuery(rangeFilters...)
+		filterRates := bleve.NewConjunctionQuery(rangeFilters...)
 
 		combinedFilter.AddMust(filterRates)
 	}

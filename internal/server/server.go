@@ -48,7 +48,7 @@ func NewServerPrivate(port string) *ServerPrivate {
 }
 
 func (s *Server) Start() {
-	s.HttpServer.Handler = s.Router
+	s.HttpServer.Handler = corsMiddleware(jsonMiddleware(s.Router))
 	s.Debug.Handler = s.initRoutsServerPrivate()
 
 	go func() {
@@ -103,5 +103,42 @@ func (s *Server) Stop(ctx context.Context) error {
 		return nil
 	} else {
 		return err
+	}
+}
+
+func corsMiddleware(next fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		// Разрешаем запросы с любого origin (для продакшена укажите конкретные домены)
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
+
+		// Разрешаем методы
+		ctx.Response.Header.Set("Access-Control-Allow-Methods",
+			"GET, POST, HEAD, PUT, DELETE, PATCH, OPTIONS")
+
+		// Разрешаем заголовки
+		ctx.Response.Header.Set("Access-Control-Allow-Headers",
+			"Origin, Content-Type, Accept, Authorization, X-Requested-With")
+
+		// Разрешаем куки и авторизацию (если нужно)
+		// ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
+
+		// Максимальное время кеширования предварительных запросов
+		ctx.Response.Header.Set("Access-Control-Max-Age", "3600")
+
+		// Обработка предварительного OPTIONS-запроса
+		if string(ctx.Method()) == "OPTIONS" {
+			ctx.SetStatusCode(fasthttp.StatusNoContent)
+			return
+		}
+
+		// Передаем запрос следующему обработчику
+		next(ctx)
+	}
+}
+
+func jsonMiddleware(next fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		ctx.Response.Header.Set("Content-Type", "application/json")
+		next(ctx)
 	}
 }

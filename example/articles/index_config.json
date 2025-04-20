@@ -36,9 +36,15 @@
       "filterable": true
     },
     {
+      "name": "theme",
+      "type": "string",
+      "searchable": true,
+      "filterable": true
+    },
+    {
       "name": "created_at",
       "type": "timestamp",
-      "searchable": false,
+      "searchable": true,
       "filterable": true,
       "sortable": true
     },

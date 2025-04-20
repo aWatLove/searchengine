@@ -15,6 +15,8 @@ const (
 	UPDATE_DOCUMENT_IN_INDEX_PATH   = "/updateDoc"
 	DELETE_DOCUMENT_FROM_INDEX_PATH = "/deleteDoc"
 
+	GET_ALL_DOCUMENTS = "/getAllDoc"
+
 	// SEARCH
 	SEARCH_SIMPLE_PATH = "/simpleSearch"
 	SEARCH_PATH        = "/search"
@@ -53,11 +55,13 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 	switch path {
 	// INDEX
 	case ADD_DOCUMENT_TO_INDEX_PATH:
-		err = s.AddDocumentToIndex(method, body, ctx.QueryArgs())
+		resp, err = s.AddDocumentToIndex(method, body, ctx.QueryArgs())
 	case UPDATE_DOCUMENT_IN_INDEX_PATH:
 		err = s.UpdateDocument(method, body, ctx.QueryArgs())
 	case DELETE_DOCUMENT_FROM_INDEX_PATH:
 		err = s.DeleteDocument(method, ctx.QueryArgs())
+	case GET_ALL_DOCUMENTS:
+		resp, err = s.getAllDoc(method, ctx.QueryArgs())
 
 	// SEARCH
 	case SEARCH_PATH:

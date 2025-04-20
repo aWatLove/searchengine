@@ -1,24 +1,24 @@
 {
   "boosts": [
     {
-      "field": "brand",
+      "field": "title",
       "weight": 5,
       "boost_type": "catboostV2"
     },
     {
-      "field": "title",
+      "field": "annotation",
       "weight": 3,
       "boost_type": "logarithmic"
     },
     {
-      "field": "seller",
+      "field": "author",
       "weight": 2,
-      "boost_type": "catboost"
+      "boost_type": "catboostV2"
     },
     {
-      "field": "color",
+      "field": "theme",
       "weight": 5,
-      "boost_type": "catboost"
+      "boost_type": "logarithmic"
     }
   ]
 }
