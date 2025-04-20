@@ -20,5 +20,21 @@ const api = axios.create({
 
 export default {
     getAllData: () => api.get('/api/v1/getAllDoc'),
-    postData: (payload) => api.post('/api/v1/addDoc', payload)
+    postData: (payload) => api.post('/api/v1/addDoc', payload),
+    getCategories: () => api.get('/api/v1/category')
+        .then(res => res.data)
+        .catch(() => []), // Возвращаем пустой массив при ошибке
+    getFiltersByCategory: (category) =>
+        api.get(`/api/v1/filtersByCategory?category=${encodeURIComponent(category)}`),
+    search: (params) =>
+        api.get('/api/v1/search', {
+            params: {
+                query: params.query,
+                filters: JSON.stringify(params.filters),
+                sortField: params.sortField,
+                sortOrder: params.sortOrder
+            }
+        }),
+    updateDoc: (docId, data) =>
+        api.post(`/api/v1/updateDoc?docId=${docId}`, data)
 }

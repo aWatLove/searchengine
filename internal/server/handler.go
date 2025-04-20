@@ -125,6 +125,10 @@ func (s *Server) Search(method string, args *fasthttp.Args) ([]byte, error) {
 		return nil, err
 	}
 
+	if resp == nil {
+		resp = make([]map[string]interface{}, 0)
+	}
+
 	return json.Marshal(&resp)
 }
 
@@ -173,5 +177,7 @@ func (s *Server) GetAllCategories(method string) ([]byte, error) {
 
 	category := s.filterCli.GetAllCategories()
 
-	return json.Marshal(&category)
+	return json.Marshal(struct {
+		Data []string `json:"data"`
+	}{category})
 }
