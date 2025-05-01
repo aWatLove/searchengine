@@ -51,8 +51,7 @@
       "searchable": false,
       "filterable": true,
       "sortable": false
-    }
-  ,
+    },
     {
       "name": "top-seller",
       "type": "bool",

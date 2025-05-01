@@ -58,20 +58,4 @@ func main() {
 	if err != nil {
 		log.Fatalln("[SERVER][ERROR] error while stopping: ", err)
 	}
-
-	//message := struct {
-	//	Id   string
-	//	From string
-	//	Body string
-	//}{
-	//	Id:   "example",
-	//	From: "marty.schoch@gmail.com",
-	//	Body: "bleve indexing is easy",
-	//}
-	//
-	//err := indexCLi.Add(message.Id, message)
-	//if err != nil {
-	//	log.Fatalln(err)
-	//}
-
 }

@@ -78,7 +78,6 @@ func (idx *Index) Add(id string, record interface{}) error {
 }
 
 // AddDocument добавляет документ в индекс после валидации
-// todo сделать инкрементальный docID
 func (i *Index) AddDocument(docID string, document map[string]interface{}) error { //todo
 	// Валидация документа
 	err := validate.ValidateDocument(i.iCfg, document)

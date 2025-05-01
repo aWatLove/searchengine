@@ -132,27 +132,6 @@ func (s *Server) Search(method string, args *fasthttp.Args) ([]byte, error) {
 	return json.Marshal(&resp)
 }
 
-func (s *Server) SimpleSearch(method string, args *fasthttp.Args) ([]byte, error) {
-	if method != http.MethodGet {
-		return nil, errMethodNotAllowed
-	}
-
-	query := string(args.Peek("query"))
-	if query == "" {
-		return nil, errors.New("query is empty")
-	}
-
-	filters := make(map[string]interface{}, 0) //todo
-	sorts := make([]string, 0)                 //todo
-
-	resp, err := s.SearchCli.SearchIndex(query, filters, sorts)
-	if err != nil {
-		return nil, err
-	}
-
-	return json.Marshal(&resp)
-}
-
 func (s *Server) FiltersByCategory(method string, args *fasthttp.Args) ([]byte, error) {
 	if method != http.MethodGet {
 		return nil, errMethodNotAllowed
@@ -180,4 +159,25 @@ func (s *Server) GetAllCategories(method string) ([]byte, error) {
 	return json.Marshal(struct {
 		Data []string `json:"data"`
 	}{category})
+}
+
+func (s *Server) SimpleSearch(method string, args *fasthttp.Args) ([]byte, error) {
+	if method != http.MethodGet {
+		return nil, errMethodNotAllowed
+	}
+
+	query := string(args.Peek("query"))
+	if query == "" {
+		return nil, errors.New("query is empty")
+	}
+
+	filters := make(map[string]interface{}, 0) //todo
+	sorts := make([]string, 0)                 //todo
+
+	resp, err := s.SearchCli.SearchIndex(query, filters, sorts)
+	if err != nil {
+		return nil, err
+	}
+
+	return json.Marshal(&resp)
 }

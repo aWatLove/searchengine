@@ -5,9 +5,6 @@ import (
 	"searchengine/internal/config"
 )
 
-//type ValidateClient struct {
-//}
-
 // ValidateDocument проверяет соответствие данных конфигурации полей
 func ValidateDocument(config *config.IndexConfig, document map[string]interface{}) error {
 	for _, field := range config.Fields {
@@ -44,7 +41,7 @@ func validateFieldType(expectedType string, value interface{}) bool {
 	}
 }
 
-func ValidateSortField(cfg *config.Config, sortField string) bool { // todo в структуру Validator'а, создать нужные мапы, которые будут инициализироваться при старте движка
+func ValidateSortField(cfg *config.Config, sortField string) bool {
 	for _, f := range cfg.IndexCfg.Fields {
 		if f.Name == sortField {
 			return f.Sortable
