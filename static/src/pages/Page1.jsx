@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useAppContext} from '../contexts/AppContext'
 import api from "../services/api.js";
 
@@ -51,30 +51,122 @@ const JsonRenderer = ({data}) => {
 
 export default function Page1() {
     const {startLoading, stopLoading} = useAppContext()
-    const [data, setData] = useState(null)
-    const [postData, setPostData] = useState('')
+    const [postData, setPostData] = useState('some struct')
     const [postResult, setPostResult] = useState(null)
     const [postError, setPostError] = useState(null)
+    const [indexStruct, setIndexStruct] = useState([])
+    const [docId, setDocId] = useState('')
+    const [editData, setEditData] = useState('')
+    const [editResult, setEditResult] = useState(null)
+    const [editError, setEditError] = useState(null)
+    const [deleteDocId, setDeleteDocId] = useState('')
+    const [deleteResult, setDeleteResult] = useState(null)
+    const [deleteError, setDeleteError] = useState(null)
 
-    const handleGetData = async () => {
+    // Обработчик удаления документа
+    const handleDeleteDoc = async (e) => {
+        e.preventDefault()
         try {
             startLoading()
-            const response = await api.getAllData()
-            console.log('Полные данные ответа:', response)
-            setData(response.data)
+            setDeleteResult(null)
+            setDeleteError(null)
+
+            await api.deleteDoc(deleteDocId)
+
+            setDeleteResult({
+                message: 'Документ успешно удален!',
+                id: deleteDocId
+            })
+            setDeleteDocId('') // Очищаем поле после удаления
         } catch (error) {
-            console.error('Полная ошибка:', error)
+            setDeleteError(error.response?.data || error.message)
+        } finally {
+            stopLoading()
+        }
+    }
+    // Новый обработчик для поиска документа
+    const handleFindDoc = async () => {
+        try {
+            startLoading()
+            setEditError(null)
+            setEditResult(null)
+            const response = await api.getDocumentById(docId)
+            setEditData(JSON.stringify(response.data, null, 2))
+            setEditError(null)
+        } catch (error) {
+            console.error('Ошибка при поиске документа:', error)
+            setEditError(error.response?.data || 'Документ не найден')
+            setEditData('')
         } finally {
             stopLoading()
         }
     }
 
+    // Обработчик для обновления документа
+    const handleUpdateDoc = async (e) => {
+        e.preventDefault()
+
+        try {
+            startLoading()
+            setEditError(null)
+            setEditResult(null)
+
+            const parsedData = JSON.parse(editData)
+            const response = await api.updateDoc(docId, parsedData)
+
+            setEditResult({
+                message: 'Документ успешно обновлен!',
+                data: response.data
+            })
+        } catch (error) {
+            setEditError(error.response?.data || error.message)
+        } finally {
+            stopLoading()
+        }
+    }
+
+    useEffect(() => {
+        const loadIndexStruct = async () => {
+            try {
+                startLoading()
+                const response = await api.getIndexStruct()
+
+                // Проверка и нормализация данных
+                const data = Array.isArray(response)
+                    ? response
+                    : response?.data || []
+
+                setIndexStruct(data)
+                setPostData(JSON.stringify(data, null, 2))
+            } catch (error) {
+                console.error('Failed to load categories:', error)
+                setIndexStruct([])
+            } finally {
+                stopLoading()
+            }
+        }
+        loadIndexStruct()
+    }, [])
+
+
     const handleAddDoc = async (e) => {
         e.preventDefault()
+
+        // Проверка на идентичность данных
+        console.log('postData: ',postData)
+        console.log('indexStruct: ', JSON.stringify(indexStruct, null, 2))
+        if (postData === JSON.stringify(indexStruct, null, 2)) {
+            const message = 'Пустой документ'
+
+            setPostError(message)
+            return
+        }
+
         try {
             startLoading()
             setPostError(null)
             setPostResult(null)
+
 
             // Парсим JSON
             const parsedData = JSON.parse(postData)
@@ -98,88 +190,393 @@ export default function Page1() {
             stopLoading()
         }
     }
+    //
+    // return (
+    //     <div className="p-8">
+    //         <div className="max-w-4xl mx-auto space-y-8">
+    //
+    //             {/* Добавить документ */}
+    //             <div className="bg-white rounded-xl shadow-lg p-6">
+    //                 <h2 className="text-2xl font-bold mb-4">Добавить новый документ</h2>
+    //
+    //                 <form onSubmit={handleAddDoc} className="space-y-4">
+    //                     <div>
+    //                         <label className="block text-sm font-medium text-gray-700 mb-2">
+    //                             Введите данные в JSON-формате:
+    //                         </label>
+    //                         <textarea
+    //                             value={postData}
+    //                             onChange={(e) => setPostData(e.target.value)}
+    //                             className="w-full h-70 px-3 py-2 border rounded-lg
+    //               font-mono text-sm focus:ring-2 focus:ring-blue-500
+    //               focus:border-blue-500 resize-none"
+    //                             placeholder={JSON.stringify(indexStruct, null, 2)}
+    //                         />
+    //                     </div>
+    //
+    //                     <button
+    //                         type="submit"
+    //                         className="bg-green-600 hover:bg-green-700 text-white
+    //             font-medium py-2 px-6 rounded-lg transition-colors"
+    //                     >
+    //                         Отправить данные
+    //                     </button>
+    //                 </form>
+    //
+    //                 {/* Блок с результатом */}
+    //                 {postResult && (
+    //                     <div className="mt-6 p-4 bg-green-50 rounded-lg">
+    //                         <p className="text-green-600 font-medium">
+    //                             ✅ {postResult.message}
+    //                         </p>
+    //                         <p className="mt-2 text-green-800">
+    //                             ID: <span className="font-mono">{postResult.id}</span>
+    //                         </p>
+    //                     </div>
+    //                 )}
+    //
+    //                 {postError && (
+    //                     <div className="mt-6 p-4 bg-red-50 rounded-lg">
+    //                         <p className="text-red-600 font-medium">
+    //                             ❌ Ошибка: {postError}
+    //                         </p>
+    //                     </div>
+    //                 )}
+    //             </div>
+    //
+    //
+    //
+    //
+    //             {/* Поиск и редактирование документа */}
+    //             <div className="bg-white rounded-xl shadow-lg p-6">
+    //                 <h2 className="text-2xl font-bold mb-4">Редактировать документ</h2>
+    //
+    //                 <div className="space-y-4">
+    //                     <div className="flex gap-4">
+    //                         <input
+    //                             type="text"
+    //                             value={docId}
+    //                             onChange={(e) => setDocId(e.target.value)}
+    //                             placeholder="Введите ID документа"
+    //                             className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+    //                         />
+    //                         <button
+    //                             type="button"
+    //                             onClick={handleFindDoc}
+    //                             className="bg-blue-600 hover:bg-blue-700 text-white
+    //                                 font-medium py-2 px-6 rounded-lg transition-colors"
+    //                         >
+    //                             Найти
+    //                         </button>
+    //                     </div>
+    //
+    //                     {editData && (
+    //                         <form onSubmit={handleUpdateDoc} className="space-y-4">
+    //                             <textarea
+    //                                 value={editData}
+    //                                 onChange={(e) => setEditData(e.target.value)}
+    //                                 className="w-full h-70 px-3 py-2 border rounded-lg
+    //                                     font-mono text-sm focus:ring-2 focus:ring-blue-500
+    //                                     focus:border-blue-500 resize-none"
+    //                             />
+    //                             <button
+    //                                 type="submit"
+    //                                 className="bg-orange-600 hover:bg-orange-700 text-white
+    //                                     font-medium py-2 px-6 rounded-lg transition-colors"
+    //                             >
+    //                                 Сохранить изменения
+    //                             </button>
+    //                         </form>
+    //                     )}
+    //
+    //                     {/* Результаты редактирования */}
+    //                     {editResult && (
+    //                         <div className="mt-4 p-4 bg-green-50 rounded-lg">
+    //                             <p className="text-green-600 font-medium">
+    //                                 ✅ {editResult.message}
+    //                             </p>
+    //                             <pre className="mt-2 text-green-800 overflow-x-auto">
+    //                                 {JSON.stringify(editResult.data, null, 2)}
+    //                             </pre>
+    //                         </div>
+    //                     )}
+    //
+    //                     {editError && (
+    //                         <div className="mt-4 p-4 bg-red-50 rounded-lg">
+    //                             <p className="text-red-600 font-medium">
+    //                                 ❌ Ошибка: {editError}
+    //                             </p>
+    //                         </div>
+    //                     )}
+    //                 </div>
+    //             </div>
+    //
+    //
+    //             {/* Удаление документа */}
+    //             <div className="bg-white rounded-xl shadow-lg p-6">
+    //                 <h2 className="text-2xl font-bold mb-4">Удалить документ</h2>
+    //
+    //                 <form onSubmit={handleDeleteDoc} className="space-y-4">
+    //                     <div className="flex gap-4">
+    //                         <input
+    //                             type="text"
+    //                             value={deleteDocId}
+    //                             onChange={(e) => setDeleteDocId(e.target.value)}
+    //                             placeholder="Введите ID документа"
+    //                             className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500"
+    //                         />
+    //                         <button
+    //                             type="submit"
+    //                             className="bg-red-600 hover:bg-red-700 text-white
+    //                                 font-medium py-2 px-6 rounded-lg transition-colors"
+    //                         >
+    //                             Удалить
+    //                         </button>
+    //                     </div>
+    //
+    //                     {/* Результаты удаления */}
+    //                     {deleteResult && (
+    //                         <div className="mt-4 p-4 bg-green-50 rounded-lg">
+    //                             <p className="text-green-600 font-medium">
+    //                                 ✅ {deleteResult.message}
+    //                             </p>
+    //                             <p className="mt-2 text-green-800">
+    //                                 Удаленный ID: <span className="font-mono">{deleteResult.id}</span>
+    //                             </p>
+    //                         </div>
+    //                     )}
+    //
+    //                     {deleteError && (
+    //                         <div className="mt-4 p-4 bg-red-50 rounded-lg">
+    //                             <p className="text-red-600 font-medium">
+    //                                 ❌ Ошибка: {deleteError}
+    //                             </p>
+    //                         </div>
+    //                     )}
+    //                 </form>
+    //             </div>
+    //
+    //         </div>
+    //     </div>
+    //
+    // )
 
     return (
         <div className="p-8">
             <div className="max-w-4xl mx-auto space-y-8">
 
-
-
-                {/* Получить все документы */}
-                <div className="mt-6 p-6  min-h-[50vh] max-h-[85vh] bg-white rounded-xl shadow-lg">
-                    <h2 className="text-2xl font-bold mb-4">Получить все документы</h2>
-
-                    <button
-                        onClick={handleGetData}
-                        className="bg-green-600 hover:bg-green-700 text-white
-                font-medium py-2 px-6 rounded-lg transition-colors mb-4"
-                    >
-                        Получить
-                    </button>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Результат запроса:
-                    </label>
-                    <div className="min-h-[25vh] max-h-[60vh] overflow-y-auto ring-1 ring-gray-500 rounded-lg p-4">
-                        {data && (
-                            <div>
-
-                                <JsonRenderer data={data}/>
-                            </div>
-
-                        )}
-                    </div>
-                </div>
-
                 {/* Добавить документ */}
-                <div className="bg-white rounded-xl shadow-lg p-6">
-                    <h2 className="text-2xl font-bold mb-4">Добавить новый документ</h2>
+                <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                    <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                        Добавить новый документ
+                    </h2>
 
-                    <form onSubmit={handleAddDoc} className="space-y-4">
+                    <form onSubmit={handleAddDoc} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Введите данные в JSON-формате:
+                            <label className="block text-lg font-medium text-gray-800 mb-3 flex items-center gap-2">
+                                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                JSON данные документа
                             </label>
                             <textarea
                                 value={postData}
                                 onChange={(e) => setPostData(e.target.value)}
-                                className="w-full h-48 px-3 py-2 border rounded-lg
-                  font-mono text-sm focus:ring-2 focus:ring-blue-500
-                  focus:border-blue-500 resize-none"
-                                placeholder={'{\n  "field": "value"\n}'}
+                                className="w-full h-96 px-5 py-4 border-2 rounded-xl font-mono text-sm
+                                focus:ring-4 focus:ring-blue-200 focus:border-blue-500 resize-none
+                                transition-all duration-200 border-gray-200 shadow-sm"
+                                placeholder={JSON.stringify(indexStruct, null, 2)}
                             />
                         </div>
 
                         <button
                             type="submit"
-                            className="bg-green-600 hover:bg-green-700 text-white
-                font-medium py-2 px-6 rounded-lg transition-colors"
+                            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700
+                            text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300
+                            transform hover:scale-[1.02] shadow-lg hover:shadow-xl active:scale-95"
                         >
-                            Отправить данные
+                            Создать документ
                         </button>
                     </form>
 
-                    {/* Блок с результатом */}
+                    {/* Результаты */}
                     {postResult && (
-                        <div className="mt-6 p-4 bg-green-50 rounded-lg">
-                            <p className="text-green-600 font-medium">
-                                ✅ {postResult.message}
-                            </p>
-                            <p className="mt-2 text-green-800">
-                                ID: <span className="font-mono">{postResult.id}</span>
-                            </p>
+                        <div className="mt-6 p-5 bg-green-50 rounded-xl border-2 border-green-100 animate-fade-in">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-green-100 p-2 rounded-full">
+                                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="text-green-600 font-semibold">{postResult.message}</p>
+                                    <p className="text-green-700 mt-1">
+                                        ID: <span className="font-mono bg-green-100 px-2 py-1 rounded">{postResult.id}</span>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
                     {postError && (
-                        <div className="mt-6 p-4 bg-red-50 rounded-lg">
-                            <p className="text-red-600 font-medium">
-                                ❌ Ошибка: {postError}
-                            </p>
+                        <div className="mt-6 p-5 bg-red-50 rounded-xl border-2 border-red-100 animate-fade-in">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-red-100 p-2 rounded-full">
+                                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <p className="text-red-600 font-semibold">Ошибка: {postError}</p>
+                            </div>
                         </div>
                     )}
                 </div>
+
+                {/* Редактирование документа */}
+                <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                    <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Редактировать документ
+                    </h2>
+
+                    <div className="space-y-6">
+                        <div className="flex gap-4">
+                            <input
+                                type="text"
+                                value={docId}
+                                onChange={(e) => setDocId(e.target.value)}
+                                placeholder="Введите ID документа"
+                                className="flex-1 px-5 py-3 border-2 rounded-xl focus:ring-4
+                                focus:ring-blue-200 focus:border-blue-500 border-gray-200
+                                shadow-sm transition-all duration-200"
+                            />
+                            <button
+                                onClick={handleFindDoc}
+                                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
+                                text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300
+                                transform hover:scale-[1.02] shadow-lg hover:shadow-xl active:scale-95"
+                            >
+                                Найти документ
+                            </button>
+                        </div>
+
+                        {editData && (
+                            <form onSubmit={handleUpdateDoc} className="space-y-6">
+                            <textarea
+                                value={editData}
+                                onChange={(e) => setEditData(e.target.value)}
+                                className="w-full h-96 px-5 py-4 border-2 rounded-xl font-mono text-sm
+                                    focus:ring-4 focus:ring-blue-200 focus:border-blue-500 resize-none
+                                    transition-all duration-200 border-gray-200 shadow-sm"
+                            />
+                                <button
+                                    type="submit"
+                                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700
+                                    text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300
+                                    transform hover:scale-[1.02] shadow-lg hover:shadow-xl active:scale-95"
+                                >
+                                    Сохранить изменения
+                                </button>
+                            </form>
+                        )}
+
+                        {/* Результаты редактирования */}
+                        {editResult && (
+                            <div className="mt-6 p-5 bg-green-50 rounded-xl border-2 border-green-100 animate-fade-in">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-green-100 p-2 rounded-full">
+                                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-green-600 font-semibold">{editResult.message}</p>
+                                        <pre className="mt-2 text-green-700 bg-green-100 p-3 rounded-lg overflow-x-auto">
+                                        {JSON.stringify(editResult.data, null, 2)}
+                                    </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {editError && (
+                            <div className="mt-6 p-5 bg-red-50 rounded-xl border-2 border-red-100 animate-fade-in">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-red-100 p-2 rounded-full">
+                                        <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-red-600 font-semibold">Ошибка: {editError}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Удаление документа */}
+                <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                    <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                        Удалить документ
+                    </h2>
+
+                    <form onSubmit={handleDeleteDoc} className="space-y-6">
+                        <div className="flex gap-4">
+                            <input
+                                type="text"
+                                value={deleteDocId}
+                                onChange={(e) => setDeleteDocId(e.target.value)}
+                                placeholder="Введите ID документа"
+                                className="flex-1 px-5 py-3 border-2 rounded-xl focus:ring-4
+                                focus:ring-red-200 focus:border-red-500 border-gray-200
+                                shadow-sm transition-all duration-200"
+                            />
+                            <button
+                                type="submit"
+                                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700
+                                text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300
+                                transform hover:scale-[1.02] shadow-lg hover:shadow-xl active:scale-95"
+                            >
+                                Удалить документ
+                            </button>
+                        </div>
+
+                        {/* Результаты удаления */}
+                        {deleteResult && (
+                            <div className="mt-6 p-5 bg-green-50 rounded-xl border-2 border-green-100 animate-fade-in">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-green-100 p-2 rounded-full">
+                                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-green-600 font-semibold">{deleteResult.message}</p>
+                                        <p className="text-green-700 mt-1">
+                                            ID: <span className="font-mono bg-green-100 px-2 py-1 rounded">{deleteResult.id}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {deleteError && (
+                            <div className="mt-6 p-5 bg-red-50 rounded-xl border-2 border-red-100 animate-fade-in">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-red-100 p-2 rounded-full">
+                                        <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <p className="text-red-600 font-semibold">Ошибка: {deleteError}</p>
+                                </div>
+                            </div>
+                        )}
+                    </form>
+                </div>
+
+
+
             </div>
         </div>
-
     )
 }

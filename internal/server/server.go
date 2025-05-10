@@ -11,6 +11,7 @@ import (
 	"searchengine/internal/filter"
 	"searchengine/internal/index"
 	"searchengine/internal/search"
+	"strings"
 )
 
 type Server struct {
@@ -73,8 +74,13 @@ func setStatusCode(ctx *fasthttp.RequestCtx, err error) {
 			ctx.SetStatusCode(fasthttp.StatusNotFound)
 		case errMethodNotAllowed:
 			ctx.SetStatusCode(fasthttp.StatusMethodNotAllowed)
+
 		default:
-			ctx.SetStatusCode(fasthttp.StatusInternalServerError)
+			if strings.Contains(err.Error(), "Can't revert") {
+				ctx.SetStatusCode(fasthttp.StatusBadRequest)
+			} else {
+				ctx.SetStatusCode(fasthttp.StatusInternalServerError)
+			}
 		}
 	} else {
 		ctx.SetStatusCode(fasthttp.StatusOK)

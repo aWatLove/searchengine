@@ -66,7 +66,9 @@ func (sc *SearchClient) SearchIndex(queryText string, filters map[string]interfa
 
 // AdvancedSearch выполняет поиск с фильтрами и ранжированием
 func (sc *SearchClient) AdvancedSearch(queryText string, filters *request.FilterRequest, sortField string, sortOrder string) ([]map[string]interface{}, error) {
-	mainQuery := bleve.NewMatchQuery(queryText)
+
+	mainQuery := bleve.NewFuzzyQuery(queryText)
+	mainQuery.Fuzziness = 1
 
 	// Применяем фильтры
 	filtersQuery, err := sc.filterCli.ApplyFilters(filters)

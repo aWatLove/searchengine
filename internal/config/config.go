@@ -97,6 +97,7 @@ type FieldConfig struct {
 	Searchable bool   `json:"searchable"`
 	Filterable bool   `json:"filterable,omitempty"`
 	Sortable   bool   `json:"sortable,omitempty"`
+	Synonym    bool   `json:"synonym,omitempty"`
 }
 
 // IndexConfig описывает конфигурацию индекса
@@ -113,12 +114,16 @@ func LoadIndexConfig(filePath string) (*IndexConfig, error) {
 		return nil, err
 	}
 
-	var config IndexConfig
-	err = json.Unmarshal(file, &config)
+	return LoadAnyConfigData[*IndexConfig](file)
+}
+
+func LoadAnyConfigData[T any](data []byte) (T, error) {
+	var config T
+	err := json.Unmarshal(data, &config)
 	if err != nil {
-		return nil, err
+		return config, err
 	}
-	return &config, nil
+	return config, nil
 }
 
 // Ranking
@@ -140,12 +145,7 @@ func LoadRankConfig(filePath string) (*RankConfig, error) {
 		return nil, err
 	}
 
-	var config RankConfig
-	err = json.Unmarshal(file, &config)
-	if err != nil {
-		return nil, err
-	}
-	return &config, nil
+	return LoadAnyConfigData[*RankConfig](file)
 }
 
 // Filters
@@ -184,10 +184,5 @@ func LoadFilterConfig(filePath string) ([]FilterConfig, error) {
 		return nil, err
 	}
 
-	var configs []FilterConfig
-	if err := json.Unmarshal(data, &configs); err != nil {
-		return nil, err
-	}
-
-	return configs, nil
+	return LoadAnyConfigData[[]FilterConfig](data)
 }

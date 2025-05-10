@@ -14,8 +14,12 @@ const (
 	ADD_DOCUMENT_TO_INDEX_PATH      = "/addDoc"
 	UPDATE_DOCUMENT_IN_INDEX_PATH   = "/updateDoc"
 	DELETE_DOCUMENT_FROM_INDEX_PATH = "/deleteDoc"
+	REINDEX_PATH                    = "/reindex"
+	GET_INDEX_STRUCT                = "/indexStruct"
+	REBUILD_INDEX_PATH              = "/rebuild"
 
 	GET_ALL_DOCUMENTS = "/getAllDoc"
+	GET_DOCUMENT_ID   = "/getDocId"
 
 	// SEARCH
 	SEARCH_SIMPLE_PATH = "/simpleSearch"
@@ -24,6 +28,18 @@ const (
 	// FILTERS
 	FILTERS_BY_CATEGORY      = "/filtersByCategory"
 	FILTERS_GET_ALL_CATEGORY = "/category"
+
+	// CONFIGS
+	GET_CONFIG_INDEX_PATH   = "/getConfig/index"
+	GET_CONFIG_FILTER_PATH  = "/getConfig/filter"
+	GET_CONFIG_RANKING_PATH = "/getConfig/ranking"
+
+	UPD_CONFIG_INDEX_PATH    = "/config/index"
+	REVERT_CONFIG_INDEX_PATH = "/config/index/revert"
+	INDEX_IS_BUILD_PATH      = "/config/index/isbuild"
+
+	UPD_CONFIG_FILTER_PATH  = "/config/filter"
+	UPD_CONFIG_RANKING_PATH = "/config/ranking"
 
 	V1 = "/api/v1"
 )
@@ -62,6 +78,14 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 		err = s.DeleteDocument(method, ctx.QueryArgs())
 	case GET_ALL_DOCUMENTS:
 		resp, err = s.getAllDoc(method, ctx.QueryArgs())
+	case REINDEX_PATH:
+		err = s.reindexing(method, ctx.QueryArgs())
+	case GET_INDEX_STRUCT:
+		resp, err = s.GetIndexStruct(method, ctx.QueryArgs())
+	case GET_DOCUMENT_ID:
+		resp, err = s.getDocId(method, ctx.QueryArgs())
+	case REBUILD_INDEX_PATH:
+		err = s.rebuildIndex(method, ctx.QueryArgs())
 
 	// SEARCH
 	case SEARCH_PATH:
@@ -74,6 +98,21 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 		resp, err = s.FiltersByCategory(method, ctx.QueryArgs())
 	case FILTERS_GET_ALL_CATEGORY:
 		resp, err = s.GetAllCategories(method)
+
+	// CONFIGS
+	case GET_CONFIG_INDEX_PATH:
+		resp, err = s.getIndexConfig(method, ctx.QueryArgs())
+	case UPD_CONFIG_INDEX_PATH:
+		err = s.updateConfigIndex(method, body, ctx.QueryArgs())
+	case REVERT_CONFIG_INDEX_PATH:
+		err = s.revertIndexConfig(method, ctx.QueryArgs())
+	case INDEX_IS_BUILD_PATH:
+		resp, err = s.isIndexBuilded(method, ctx.QueryArgs())
+
+	case GET_CONFIG_FILTER_PATH:
+		resp, err = s.getConfigFilter(method, ctx.QueryArgs())
+	case GET_CONFIG_RANKING_PATH:
+		resp, err = s.getConfigRanking(method, ctx.QueryArgs())
 
 	default:
 		err = errNotFound

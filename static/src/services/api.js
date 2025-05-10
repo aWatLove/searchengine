@@ -20,6 +20,9 @@ const api = axios.create({
 
 export default {
     getAllData: () => api.get('/api/v1/getAllDoc'),
+    getIndexStruct: () => api.get('/api/v1/indexStruct'),
+    deleteDoc: (docId) => api.delete(`/api/v1/deleteDoc?docId=${docId}`),
+    getDocumentById: (docId) => api.get(`/api/v1/getDocId?docId=${docId}`),
     postData: (payload) => api.post('/api/v1/addDoc', payload),
     getCategories: () => api.get('/api/v1/category')
         .then(res => res.data)
@@ -36,5 +39,12 @@ export default {
             }
         }),
     updateDoc: (docId, data) =>
-        api.post(`/api/v1/updateDoc?docId=${docId}`, data)
+        api.post(`/api/v1/updateDoc?docId=${docId}`, data),
+
+    getConfig: (type) => api.get(`/api/v1/getConfig/${type}`),
+    updateConfig: (type, data) => api.post(`/api/v1/config/${type}`, data),
+
+    checkBuildIndex: () => api.get('/api/v1/config/index/isbuild'),
+    rebuildIndex: () => api.get('/api/v1/rebuild'),
+    revertIndexConfig: () => api.get('/api/v1/config/index/revert'),
 }
