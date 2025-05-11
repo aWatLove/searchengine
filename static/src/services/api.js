@@ -51,4 +51,11 @@ export default {
     getLastLog: () => api.get('/api/v1/lastlog'),
     listLogs: () => api.get('/api/v1/listlogs'),
     getLog: (file) => api.get(`/api/v1/log?file=${file}`),
+
+    getMetrics: async (metricName, timeRange) => {
+        // Пример реализации запроса к вашему бэкенду
+        return axios.get(`/metrics/${metricName}`, {
+            params: { range: timeRange }
+        });
+    },
 }

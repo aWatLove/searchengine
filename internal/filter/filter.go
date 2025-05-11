@@ -1,9 +1,9 @@
 package filter
 
 import (
+	"fmt"
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/search/query"
-	"log"
 	"searchengine/internal/common/request"
 	"searchengine/internal/config"
 	"strconv"
@@ -40,7 +40,7 @@ func (fc *FilterClient) RebuildFilters(filtersConfig []config.FilterConfig) erro
 }
 
 // ApplyFilters добавляет фильтры в запрос Bleve
-func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (*query.BooleanQuery, error) {
+func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (query.Query, error) {
 	if filters == nil {
 		return nil, nil
 	}
@@ -51,45 +51,36 @@ func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (*query.Boo
 
 	combinedFilter := bleve.NewBooleanQuery()
 
-	// category filter
+	// Category filter
 	if filters.Category != "" {
-		filterCategory := bleve.NewTermQuery(strings.ToLower(filters.Category))
-		filterCategory.SetField("category")
-
-		combinedFilter.AddMust(filterCategory)
+		categoryFilter := bleve.NewTermQuery(strings.ToLower(filters.Category))
+		categoryFilter.SetField("category")
+		combinedFilter.AddMust(categoryFilter)
 	}
 
-	if len(filters.Range) != 0 {
-		// range filters
-		rangeFilters := make([]query.Query, 0, len(filters.Range))
+	// Range filters (numbers and dates)
+	if len(filters.Range) > 0 {
+		rangeQueries := bleve.NewBooleanQuery()
 		for _, r := range filters.Range {
-			if r.Type == "date" {
-				// Преобразуем FromValue и ToValue в time.Time
-				fromDate, errFrom := fc.parseDate(r.FromValue)
-				toDate, errTo := fc.parseDate(r.ToValue)
-				if errFrom != nil || errTo != nil {
-					log.Println("[FILTER][ERROR] Error parsing date range")
-					continue
-				}
+			var q query.Query
+			var err error
 
-				// Создаем DateRangeQuery
-				filterDate := bleve.NewDateRangeQuery(fromDate, toDate)
-				filterDate.SetField(r.Name)
-
-				// Добавляем в список фильтров
-				rangeFilters = append(rangeFilters, filterDate)
-			} else {
-				minV := parseNumeric(r.FromValue)
-				maxV := parseNumeric(r.ToValue)
-				rf := bleve.NewNumericRangeQuery(minV, maxV)
-				rf.SetField(r.Name)
-				rangeFilters = append(rangeFilters, rf)
+			switch r.Type {
+			case "timestamp":
+				q, err = fc.buildDateRangeQuery(r)
+			case "number":
+				q, err = fc.buildNumericRangeQuery(r)
+			default:
+				return nil, fmt.Errorf("unsupported range type: %s", r.Type)
 			}
 
-		}
-		filterRates := bleve.NewConjunctionQuery(rangeFilters...)
+			if err != nil {
+				return nil, fmt.Errorf("range filter error (%s): %v", r.Name, err)
+			}
 
-		combinedFilter.AddMust(filterRates)
+			rangeQueries.AddShould(q) // OR между разными полями
+		}
+		combinedFilter.AddMust(rangeQueries)
 	}
 
 	if len(filters.MultiSelect) != 0 {
@@ -139,6 +130,42 @@ func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (*query.Boo
 	}
 
 	return combinedFilter, nil
+}
+
+func (fc *FilterClient) buildDateRangeQuery(r config.RangeFilter) (query.Query, error) {
+	// Парсим даты без получения указателя
+	fromDate, err := time.Parse(time.RFC3339, r.FromValue)
+	if err != nil {
+		return nil, fmt.Errorf("invalid from date: %s", r.FromValue)
+	}
+
+	toDate, err := time.Parse(time.RFC3339, r.ToValue)
+	if err != nil {
+		return nil, fmt.Errorf("invalid to date: %s", r.ToValue)
+	}
+
+	// Передаем значения времени напрямую, не используя указатели
+	dateQuery := bleve.NewDateRangeQuery(fromDate, toDate)
+	dateQuery.SetField(r.Name)
+	return dateQuery, nil
+}
+
+func (fc *FilterClient) buildNumericRangeQuery(r config.RangeFilter) (query.Query, error) {
+	// Для числовых значений оставляем указатели
+	min, err := strconv.ParseFloat(r.FromValue, 64)
+	if err != nil {
+		return nil, fmt.Errorf("invalid min value: %s", r.FromValue)
+	}
+
+	max, err := strconv.ParseFloat(r.ToValue, 64)
+	if err != nil {
+		return nil, fmt.Errorf("invalid max value: %s", r.ToValue)
+	}
+
+	// Для числовых диапазонов передаем указатели
+	numQuery := bleve.NewNumericRangeQuery(&min, &max)
+	numQuery.SetField(r.Name)
+	return numQuery, nil
 }
 
 // Вспомогательные функции

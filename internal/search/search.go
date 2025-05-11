@@ -7,6 +7,7 @@ import (
 	"searchengine/internal/filter"
 	"searchengine/internal/index"
 	"searchengine/internal/rank"
+	"strings"
 )
 
 type SearchClient struct {
@@ -65,10 +66,62 @@ func (sc *SearchClient) SearchIndex(queryText string, filters map[string]interfa
 }
 
 // AdvancedSearch выполняет поиск с фильтрами и ранжированием
-func (sc *SearchClient) AdvancedSearch(queryText string, filters *request.FilterRequest, sortField string, sortOrder string) ([]map[string]interface{}, error) {
+//func (sc *SearchClient) AdvancedSearch(queryText string, filters *request.FilterRequest, sortField string, sortOrder string) ([]map[string]interface{}, error) {
+//
+//	mainQuery := bleve.NewFuzzyQuery(queryText)
+//	mainQuery.Fuzziness = 1
+//
+//	// Применяем фильтры
+//	filtersQuery, err := sc.filterCli.ApplyFilters(filters)
+//	if err != nil {
+//		return nil, fmt.Errorf("ошибка применения фильтров: %v", err)
+//	}
+//
+//	combinedQuery := bleve.NewBooleanQuery()
+//	combinedQuery.AddMust(mainQuery)
+//	if filtersQuery != nil {
+//		combinedQuery.AddMust(filtersQuery)
+//	}
+//
+//	searchRequest := bleve.NewSearchRequest(combinedQuery)
+//
+//	searchRequest.Fields = []string{"*"} // "*" означает вернуть все поля документа
+//
+//	// Применяем ранжирование
+//	err = sc.RankCli.ApplyRanking(searchRequest, sortField, sortOrder)
+//	if err != nil {
+//		return nil, fmt.Errorf("ошибка применения ранжирования: %v", err)
+//	}
+//
+//	// Выполняем поиск
+//	searchResult, err := sc.indxCli.Search(searchRequest)
+//	if err != nil {
+//		return nil, fmt.Errorf("ошибка выполнения поиска: %v", err)
+//	}
+//
+//	// Формируем результаты
+//	var results []map[string]interface{}
+//	for _, hit := range searchResult.Hits {
+//		results = append(results, map[string]interface{}{
+//			"id":     hit.ID,
+//			"score":  hit.Score,
+//			"fields": hit.Fields,
+//		})
+//	}
+//	return results, nil
+//}
 
-	mainQuery := bleve.NewFuzzyQuery(queryText)
-	mainQuery.Fuzziness = 1
+func (sc *SearchClient) AdvancedSearch(queryText string, filters *request.FilterRequest, sortField string, sortOrder string) ([]map[string]interface{}, error) {
+	// Разделяем запрос на отдельные термины
+	terms := strings.Fields(queryText)
+	booleanQuery := bleve.NewBooleanQuery()
+
+	// Добавляем каждый термин как отдельный MatchQuery с Fuzzy
+	for _, term := range terms {
+		termQuery := bleve.NewMatchQuery(term)
+		termQuery.Fuzziness = 1
+		booleanQuery.AddShould(termQuery) // Используем Should для логического OR
+	}
 
 	// Применяем фильтры
 	filtersQuery, err := sc.filterCli.ApplyFilters(filters)
@@ -76,31 +129,31 @@ func (sc *SearchClient) AdvancedSearch(queryText string, filters *request.Filter
 		return nil, fmt.Errorf("ошибка применения фильтров: %v", err)
 	}
 
+	// Комбинируем поиск и фильтры
 	combinedQuery := bleve.NewBooleanQuery()
-	combinedQuery.AddMust(mainQuery)
+	if len(terms) > 0 {
+		combinedQuery.AddMust(booleanQuery)
+	}
 	if filtersQuery != nil {
 		combinedQuery.AddMust(filtersQuery)
 	}
 
 	searchRequest := bleve.NewSearchRequest(combinedQuery)
+	searchRequest.Fields = []string{"*"}
 
-	searchRequest.Fields = []string{"*"} // "*" означает вернуть все поля документа
-
-	// Применяем ранжирование
-	err = sc.RankCli.ApplyRanking(searchRequest, sortField, sortOrder)
-	if err != nil {
-		return nil, fmt.Errorf("ошибка применения ранжирования: %v", err)
+	// Применяем сортировку
+	if err := sc.RankCli.ApplyRanking(searchRequest, sortField, sortOrder); err != nil {
+		return nil, fmt.Errorf("ошибка сортировки: %v", err)
 	}
 
 	// Выполняем поиск
-	//searchResult, err := index.Search(searchRequest)
 	searchResult, err := sc.indxCli.Search(searchRequest)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка выполнения поиска: %v", err)
+		return nil, fmt.Errorf("ошибка поиска: %v", err)
 	}
 
 	// Формируем результаты
-	var results []map[string]interface{}
+	results := make([]map[string]interface{}, 0, len(searchResult.Hits))
 	for _, hit := range searchResult.Hits {
 		results = append(results, map[string]interface{}{
 			"id":     hit.ID,

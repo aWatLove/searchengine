@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/valyala/fasthttp"
 	"searchengine/internal/common/utils"
 	"strings"
@@ -129,6 +130,8 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 		resp, err = s.listLogsHandler(ctx)
 	case LOG_PATH:
 		s.logHandler(ctx)
+	case "/metrics":
+		promhttp.Handler()
 
 	default:
 		err = errNotFound

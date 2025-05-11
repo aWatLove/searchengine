@@ -25,43 +25,112 @@ func (rc *RankingClient) SetCfg(cfg *config.RankConfig) {
 	rc.cfg = cfg
 }
 
-// ApplyRanking добавляет настройки ранжирования в запрос Bleve
+//// ApplyRanking добавляет настройки ранжирования в запрос Bleve
+//func (rc *RankingClient) ApplyRanking(searchRequest *bleve.SearchRequest, sortField string, sortOrder string) error {
+//	var sortOrderList []string
+//
+//	// Если передана сортировка, добавляем ее
+//	if sortField != "" && sortOrder != "" {
+//		if sortOrder == constants.SortOrderDesc {
+//			// Сортировка по убыванию
+//			sortOrderList = append(sortOrderList, fmt.Sprintf("-%s", sortField))
+//		} else if sortOrder == constants.SortOrderAsc {
+//			// Сортировка по возрастанию
+//			sortOrderList = append(sortOrderList, sortField)
+//		} else {
+//			// Некорректный порядок сортировки
+//			return fmt.Errorf("invalid sort order: %s. Expected 'asc' or 'desc'", sortOrder)
+//		}
+//	} else {
+//		// Если сортировка не передана, применяем ранжирование
+//		for _, boost := range rc.cfg.Boosts {
+//			field := boost.Field
+//			weight := boost.Weight
+//			boostType := boost.BoostType
+//
+//			switch boostType {
+//			case customBoost:
+//				sortOrderList = append(sortOrderList, fmt.Sprintf("-%s", field))
+//			case catboostV2:
+//				sortOrderList = append(sortOrderList, fmt.Sprintf("-%s^%.2f", field, weight))
+//			case logarithmic:
+//				sortOrderList = append(sortOrderList, fmt.Sprintf("-%s^log", field))
+//			default:
+//				sortOrderList = append(sortOrderList, field)
+//			}
+//		}
+//	}
+//
+//	// Применяем сортировку или ранжирование
+//	searchRequest.SortBy(sortOrderList)
+//	return nil
+//}
+
+//func (rc *RankingClient) ApplyRanking(searchRequest *bleve.SearchRequest, sortField string, sortOrder string) error {
+//	var sortOrderList []string
+//
+//	// Явная сортировка от пользователя
+//	if sortField != "" && sortOrder != "" {
+//		if sortOrder != constants.SortOrderAsc && sortOrder != constants.SortOrderDesc {
+//			return fmt.Errorf("invalid sort order: %s. Expected 'asc' or 'desc'", sortOrder)
+//		}
+//		sortField = fmt.Sprintf("-%s", sortField)
+//		sortOrderList = []string{sortField}
+//	} else {
+//		// Сортировка по умолчанию: сначала по релевантности (score), потом по бустам из конфига
+//		sortOrderList = []string{"-_score"} // По убыванию релевантности
+//
+//		// Добавляем дополнительные поля сортировки из конфига (если нужно)
+//		for _, boost := range rc.cfg.Boosts {
+//			sortField := fmt.Sprintf("-%s", boost.Field)
+//			if boost.Weight > 0 {
+//				sortField = fmt.Sprintf("-%s^%.2f", boost.Field, boost.Weight)
+//			}
+//			sortOrderList = append(sortOrderList, sortField)
+//		}
+//	}
+//
+//	searchRequest.SortBy(sortOrderList)
+//	return nil
+//}
+
 func (rc *RankingClient) ApplyRanking(searchRequest *bleve.SearchRequest, sortField string, sortOrder string) error {
 	var sortOrderList []string
 
-	// Если передана сортировка, добавляем ее
+	// Явная сортировка от пользователя
 	if sortField != "" && sortOrder != "" {
-		if sortOrder == constants.SortOrderDesc {
-			// Сортировка по убыванию
-			sortOrderList = append(sortOrderList, fmt.Sprintf("-%s", sortField))
-		} else if sortOrder == constants.SortOrderAsc {
-			// Сортировка по возрастанию
-			sortOrderList = append(sortOrderList, sortField)
-		} else {
-			// Некорректный порядок сортировки
+		if sortOrder != constants.SortOrderAsc && sortOrder != constants.SortOrderDesc {
 			return fmt.Errorf("invalid sort order: %s. Expected 'asc' or 'desc'", sortOrder)
 		}
-	} else {
-		// Если сортировка не передана, применяем ранжирование
-		for _, boost := range rc.cfg.Boosts {
-			field := boost.Field
-			weight := boost.Weight
-			boostType := boost.BoostType
 
-			switch boostType {
-			case customBoost:
-				sortOrderList = append(sortOrderList, fmt.Sprintf("-%s", field))
-			case catboostV2:
-				sortOrderList = append(sortOrderList, fmt.Sprintf("%s^%.2f", field, weight))
-			case logarithmic:
-				sortOrderList = append(sortOrderList, fmt.Sprintf("%s^log", field))
-			default:
-				sortOrderList = append(sortOrderList, field)
+		// Форматируем поле для сортировки
+		if sortOrder == constants.SortOrderDesc {
+			sortField = "-" + sortField
+		}
+		sortOrderList = []string{sortField}
+	} else {
+		// Сортировка по умолчанию: релевантность + бусты
+		sortOrderList = []string{"-_score"} // Сначала по релевантности
+
+		// Добавляем бустируемые поля из конфига
+		for _, boost := range rc.cfg.Boosts {
+			// Формируем поле с учетом веса и типа буста
+			sortField := fmt.Sprintf("-%s", boost.Field)
+			if boost.Weight > 0 {
+				switch boost.BoostType {
+				case "value":
+					sortField = fmt.Sprintf("-%s^%.2f", boost.Field, boost.Weight)
+				case "logarithmic":
+					sortField = fmt.Sprintf("-%s^log", boost.Field)
+				case "custom":
+					// Кастомная логика, например, умножение на коэффициент
+					sortField = fmt.Sprintf("-%s*%.2f", boost.Field, boost.Weight)
+				}
 			}
+			sortOrderList = append(sortOrderList, sortField)
 		}
 	}
 
-	// Применяем сортировку или ранжирование
 	searchRequest.SortBy(sortOrderList)
 	return nil
 }

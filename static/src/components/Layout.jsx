@@ -41,6 +41,14 @@ export default function Layout() {
                             ЛОГИ
                         </Link>
                     </li>
+                    <li>
+                        <Link
+                            to="/metrics"
+                            className="block px-4 py-2 hover:bg-gray-700 rounded transition-colors"
+                        >
+                            МЕТРИКИ
+                        </Link>
+                    </li>
                 </ul>
             </nav>
 

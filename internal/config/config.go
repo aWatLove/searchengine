@@ -10,9 +10,7 @@ import (
 )
 
 type Config struct {
-	TestEnv   string `envconfig:"TEST_ENV" required:"true"`
 	IndexPath string `envconfig:"INDEX_PATH" required:"true"`
-	//IndexName string `envconfig:"INDEX_NAME" required:"true"`
 
 	PrivatePort string `envconfig:"PRIVATE_PORT" required:"true"`
 	PublicPort  string `envconfig:"PUBLIC_PORT" required:"true"`
