@@ -236,8 +236,12 @@ export default function Page2() {
                                 placeholder="Загрузка конфигурации..."
                             />
 
+
+                        </div>
+
+                        <div className="p-6 bg-gray-50 flex justify-end gap-4 border-t border-gray-100">
                             {error && (
-                                <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 animate-fade-in">
+                                <div className="px-8 py-3 bg-red-50 rounded-xl border border-red-100 animate-fade-in">
                                     <p className="text-red-600 font-medium flex items-center gap-2">
                                         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                                             <path
@@ -250,7 +254,7 @@ export default function Page2() {
 
                             {successMessage && (
                                 <div
-                                    className="mt-6 p-4 bg-green-50 rounded-xl border border-green-100 animate-fade-in">
+                                    className="px-8 py-3 bg-green-50 rounded-xl border border-green-100 animate-fade-in">
                                     <p className="text-green-600 font-medium flex items-center gap-2">
                                         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                                             <path
@@ -260,9 +264,6 @@ export default function Page2() {
                                     </p>
                                 </div>
                             )}
-                        </div>
-
-                        <div className="p-6 bg-gray-50 flex justify-end gap-4 border-t border-gray-100">
                             <button
                                 onClick={() => setIsModalOpen(false)}
                                 className="px-8 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl

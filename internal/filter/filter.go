@@ -28,6 +28,17 @@ func New(cfg *config.Config) *FilterClient {
 	return &FilterClient{cfg: cfg, FiltersConfig: cfg.FilterCfg, filters: filters}
 }
 
+func (fc *FilterClient) RebuildFilters(filtersConfig []config.FilterConfig) error {
+	filters := make(map[string]config.FilterConfig)
+	for _, f := range filtersConfig {
+		filters[f.Category] = f
+	}
+
+	fc.filters = filters
+	fc.FiltersConfig = filtersConfig
+	return nil
+}
+
 // ApplyFilters добавляет фильтры в запрос Bleve
 func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (*query.BooleanQuery, error) {
 	if filters == nil {

@@ -9,9 +9,11 @@ import (
 	"github.com/valyala/fasthttp"
 	"net/http"
 	"os"
+	"path/filepath"
 	"searchengine/internal/common/request"
 	"searchengine/internal/config"
 	"searchengine/internal/validate"
+	"sort"
 	"strings"
 	"time"
 )
@@ -391,4 +393,142 @@ func (s *Server) revertIndexConfig(method string, args *fasthttp.Args) error {
 	s.Cfg.IndexCfg = indexCfgOld
 	s.IndexCli.SetBuilded()
 	return nil
+}
+
+func (s *Server) updateConfigFilter(method string, body []byte, args *fasthttp.Args) error {
+	if method != http.MethodPost {
+		return errMethodNotAllowed
+	}
+
+	cfgNew, err := config.LoadAnyConfigData[[]config.FilterConfig](body)
+	if err != nil {
+		return err
+	}
+
+	err = s.filterCli.RebuildFilters(cfgNew)
+	if err != nil {
+		return err
+	}
+
+	// запись нового конфига
+	fNew, err := os.Create(fmt.Sprintf("%s%s", s.Cfg.CfgDirPath, s.Cfg.FilterConfigPath))
+	if err != nil {
+		return err
+	}
+	_, err = fNew.Write(body)
+	if err != nil {
+		return err
+	}
+	fNew.Close()
+
+	s.Cfg.FilterCfg = cfgNew
+
+	return nil
+}
+
+func (s *Server) updateConfigRanking(method string, body []byte, args *fasthttp.Args) error {
+	if method != http.MethodPost {
+		return errMethodNotAllowed
+	}
+
+	cfgNew, err := config.LoadAnyConfigData[*config.RankConfig](body)
+	if err != nil {
+		return err
+	}
+
+	// запись нового конфига
+	fNew, err := os.Create(fmt.Sprintf("%s%s", s.Cfg.CfgDirPath, s.Cfg.RankConfigPath))
+	if err != nil {
+		return err
+	}
+	_, err = fNew.Write(body)
+	if err != nil {
+		return err
+	}
+	fNew.Close()
+
+	s.SearchCli.RankCli.SetCfg(cfgNew)
+	s.Cfg.RankCfg = cfgNew
+
+	return nil
+}
+
+func (s *Server) lastLogHandler(ctx *fasthttp.RequestCtx) ([]byte, error) {
+	files, err := s.getLogFiles()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(files) == 0 {
+		ctx.Error("No log files found", fasthttp.StatusNotFound)
+		return nil, errNotFound
+	}
+
+	lastFile := filepath.Join(s.Cfg.LogsDir, files[0].Name())
+	if _, err := os.Stat(lastFile); os.IsNotExist(err) {
+		return nil, err
+	}
+
+	ctx.SendFile(lastFile)
+	return []byte(lastFile), nil
+}
+
+func (s *Server) listLogsHandler(ctx *fasthttp.RequestCtx) ([]byte, error) {
+	files, err := s.getLogFiles()
+	if err != nil {
+		return nil, err
+	}
+
+	var names []string
+	for _, f := range files {
+		names = append(names, f.Name())
+	}
+	return json.Marshal(names)
+}
+
+func (s *Server) logHandler(ctx *fasthttp.RequestCtx) {
+	fileName := string(ctx.QueryArgs().Peek("file"))
+	if fileName == "" {
+		ctx.Error("Missing 'file' query parameter", fasthttp.StatusBadRequest)
+		return
+	}
+
+	safePath := filepath.Join(s.Cfg.LogsDir, fileName)
+	if !strings.HasPrefix(filepath.Clean(safePath), s.Cfg.LogsDir) {
+		ctx.Error("Invalid file path", fasthttp.StatusForbidden)
+		return
+	}
+
+	if _, err := os.Stat(safePath); os.IsNotExist(err) {
+		ctx.Error("File not found", fasthttp.StatusNotFound)
+		return
+	}
+
+	ctx.SendFile(safePath)
+}
+
+func (s *Server) getLogFiles() ([]os.FileInfo, error) {
+	entries, err := os.ReadDir(s.Cfg.LogsDir)
+	if err != nil {
+		return nil, err
+	}
+
+	var files []os.FileInfo
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".log") {
+			info, err := entry.Info()
+			if err != nil {
+				continue
+			}
+			files = append(files, info)
+		}
+	}
+
+	sort.Slice(files, func(i, j int) bool {
+		t1, _ := time.Parse("2006-01-02_15-04-05", strings.TrimSuffix(files[i].Name(), ".log"))
+		t2, _ := time.Parse("2006-01-02_15-04-05", strings.TrimSuffix(files[j].Name(), ".log"))
+		return t1.After(t2)
+	})
+
+	return files, nil
 }

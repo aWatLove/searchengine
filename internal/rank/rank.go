@@ -21,6 +21,10 @@ func New(cfg *config.RankConfig) *RankingClient {
 	return &RankingClient{cfg: cfg}
 }
 
+func (rc *RankingClient) SetCfg(cfg *config.RankConfig) {
+	rc.cfg = cfg
+}
+
 // ApplyRanking добавляет настройки ранжирования в запрос Bleve
 func (rc *RankingClient) ApplyRanking(searchRequest *bleve.SearchRequest, sortField string, sortOrder string) error {
 	var sortOrderList []string

@@ -31,6 +31,9 @@ type Config struct {
 	// ranking
 	RankCfg        *RankConfig
 	RankConfigPath string `envconfig:"RANK_CONFIG_PATH" required:"true"`
+
+	// logs
+	LogsDir string `envconfig:"LOGS_DIR" required:"true"`
 }
 
 func LoadConfig() *Config {
@@ -40,6 +43,7 @@ func LoadConfig() *Config {
 		if err != nil {
 			log.Println("[CONFIG][ERROR]:", err)
 		}
+
 	}
 
 	cfg := Config{}

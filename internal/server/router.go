@@ -41,6 +41,11 @@ const (
 	UPD_CONFIG_FILTER_PATH  = "/config/filter"
 	UPD_CONFIG_RANKING_PATH = "/config/ranking"
 
+	// LOGS
+	LAST_LOG_PATH  = "/lastlog"
+	LIST_LOGS_PATH = "/listlogs"
+	LOG_PATH       = "/log"
+
 	V1 = "/api/v1"
 )
 
@@ -111,8 +116,19 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 
 	case GET_CONFIG_FILTER_PATH:
 		resp, err = s.getConfigFilter(method, ctx.QueryArgs())
+	case UPD_CONFIG_FILTER_PATH:
+		err = s.updateConfigFilter(method, body, ctx.QueryArgs())
+
 	case GET_CONFIG_RANKING_PATH:
 		resp, err = s.getConfigRanking(method, ctx.QueryArgs())
+	case UPD_CONFIG_RANKING_PATH:
+		err = s.updateConfigRanking(method, body, ctx.QueryArgs())
+	case LAST_LOG_PATH:
+		_, err = s.lastLogHandler(ctx)
+	case LIST_LOGS_PATH:
+		resp, err = s.listLogsHandler(ctx)
+	case LOG_PATH:
+		s.logHandler(ctx)
 
 	default:
 		err = errNotFound

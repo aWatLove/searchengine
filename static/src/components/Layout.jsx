@@ -33,6 +33,14 @@ export default function Layout() {
                             КОНФИГИ
                         </Link>
                     </li>
+                    <li>
+                        <Link
+                            to="/logs"
+                            className="block px-4 py-2 hover:bg-gray-700 rounded transition-colors"
+                        >
+                            ЛОГИ
+                        </Link>
+                    </li>
                 </ul>
             </nav>
 

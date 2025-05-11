@@ -6,7 +6,7 @@ import (
 )
 
 // ValidateDocument проверяет соответствие данных конфигурации полей
-func ValidateDocument(config *config.IndexConfig, document map[string]interface{}) error {
+func ValidateDocument(config *config.IndexConfig, document map[string]interface{}) error { // todo не правильная проверка
 	for _, field := range config.Fields {
 		value, exists := document[field.Name]
 		if !exists {

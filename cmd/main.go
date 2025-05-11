@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -15,7 +17,20 @@ import (
 	"time"
 )
 
+func initLogger() {
+	logFile, err := os.OpenFile(fmt.Sprintf("./logs/%s.log", time.Now().Format("2006-01-02_15-04-05")), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Пишем логи И в файл, И в консоль (опционально)
+	multiWriter := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(multiWriter)
+	log.SetFlags(log.LstdFlags)
+}
+
 func main() {
+	initLogger()
+
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 

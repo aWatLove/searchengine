@@ -11,14 +11,14 @@ import (
 
 type SearchClient struct {
 	indxCli   *index.Index
-	rankCli   *rank.RankingClient
+	RankCli   *rank.RankingClient
 	filterCli *filter.FilterClient
 }
 
 func NewSearchClient(indxCli *index.Index, rankCli *rank.RankingClient, filterCli *filter.FilterClient) *SearchClient {
 	return &SearchClient{
 		indxCli:   indxCli,
-		rankCli:   rankCli,
+		RankCli:   rankCli,
 		filterCli: filterCli,
 	}
 }
@@ -87,7 +87,7 @@ func (sc *SearchClient) AdvancedSearch(queryText string, filters *request.Filter
 	searchRequest.Fields = []string{"*"} // "*" означает вернуть все поля документа
 
 	// Применяем ранжирование
-	err = sc.rankCli.ApplyRanking(searchRequest, sortField, sortOrder)
+	err = sc.RankCli.ApplyRanking(searchRequest, sortField, sortOrder)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка применения ранжирования: %v", err)
 	}

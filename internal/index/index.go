@@ -99,7 +99,7 @@ func (i *Index) AddDocument(docID string, document map[string]interface{}) error
 		return fmt.Errorf("ошибка добавления документа в индекс: %v", err)
 	}
 
-	fmt.Printf("Документ с ID '%s' успешно добавлен в индекс.\n", docID)
+	log.Printf("Документ с ID '%s' успешно добавлен в индекс.\n", docID)
 	return nil
 }
 
@@ -128,7 +128,7 @@ func (i *Index) Update(docID string, document map[string]interface{}) error {
 		return fmt.Errorf("ошибка обновления документа в индекс: %v", err)
 	}
 
-	fmt.Printf("Документ с ID '%s' успешно обновлен в индексе.\n", docID)
+	log.Printf("Документ с ID '%s' успешно обновлен в индексе.\n", docID)
 	return nil
 }
 

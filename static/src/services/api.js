@@ -47,4 +47,8 @@ export default {
     checkBuildIndex: () => api.get('/api/v1/config/index/isbuild'),
     rebuildIndex: () => api.get('/api/v1/rebuild'),
     revertIndexConfig: () => api.get('/api/v1/config/index/revert'),
+
+    getLastLog: () => api.get('/api/v1/lastlog'),
+    listLogs: () => api.get('/api/v1/listlogs'),
+    getLog: (file) => api.get(`/api/v1/log?file=${file}`),
 }
