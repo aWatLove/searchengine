@@ -280,6 +280,23 @@ KAFKA_TOPIC=search_engine_updates
 ENABLE_KAFKA_SUBSCRIBER=true
 ```
 
+- **Формат принимаемого сообщения**
+  Пример:
+  ```json  
+  {
+    "docId": "id",
+    "document": {
+      "title": "Кроссовки Nike",
+      "price": 5000,
+      "brand": "nike"
+    },
+    "delete": false
+  }
+  ```  
+- `docId` - необязательный параметр. Если имеется, документ либо обновляется, либо создается с заданным docid;
+- `document` - документ формата определенного в конфигурации;
+- `delete` - true/false - при true, документ с заданными docId удалится.
+
 
 ---
 
