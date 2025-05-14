@@ -3,7 +3,7 @@
     {
       "field": "brand",
       "weight": 5,
-      "boost_type": "catboostV2"
+      "boost_type": "linear"
     },
     {
       "field": "title",
@@ -13,12 +13,12 @@
     {
       "field": "seller",
       "weight": 2,
-      "boost_type": "catboost"
+      "boost_type": "linear"
     },
     {
       "field": "color",
       "weight": 5,
-      "boost_type": "catboostV2"
+      "boost_type": "logarithmic"
     }
   ]
 }

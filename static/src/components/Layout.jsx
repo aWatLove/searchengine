@@ -30,7 +30,7 @@ export default function Layout() {
                             to="/config"
                             className="block px-4 py-2 hover:bg-gray-700 rounded transition-colors"
                         >
-                            КОНФИГИ
+                            КОНФИГУРАЦИИ
                         </Link>
                     </li>
                     <li>
