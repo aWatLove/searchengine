@@ -62,6 +62,7 @@ export default function Page1() {
     const [deleteDocId, setDeleteDocId] = useState('')
     const [deleteResult, setDeleteResult] = useState(null)
     const [deleteError, setDeleteError] = useState(null)
+    const [showConfirmModal, setShowConfirmModal] = useState(false)
 
     // Обработчик удаления документа
     const handleDeleteDoc = async (e) => {
@@ -70,6 +71,7 @@ export default function Page1() {
             startLoading()
             setDeleteResult(null)
             setDeleteError(null)
+            setShowConfirmModal(false)
 
             await api.deleteDoc(deleteDocId)
 
@@ -190,176 +192,6 @@ export default function Page1() {
             stopLoading()
         }
     }
-    //
-    // return (
-    //     <div className="p-8">
-    //         <div className="max-w-4xl mx-auto space-y-8">
-    //
-    //             {/* Добавить документ */}
-    //             <div className="bg-white rounded-xl shadow-lg p-6">
-    //                 <h2 className="text-2xl font-bold mb-4">Добавить новый документ</h2>
-    //
-    //                 <form onSubmit={handleAddDoc} className="space-y-4">
-    //                     <div>
-    //                         <label className="block text-sm font-medium text-gray-700 mb-2">
-    //                             Введите данные в JSON-формате:
-    //                         </label>
-    //                         <textarea
-    //                             value={postData}
-    //                             onChange={(e) => setPostData(e.target.value)}
-    //                             className="w-full h-70 px-3 py-2 border rounded-lg
-    //               font-mono text-sm focus:ring-2 focus:ring-blue-500
-    //               focus:border-blue-500 resize-none"
-    //                             placeholder={JSON.stringify(indexStruct, null, 2)}
-    //                         />
-    //                     </div>
-    //
-    //                     <button
-    //                         type="submit"
-    //                         className="bg-green-600 hover:bg-green-700 text-white
-    //             font-medium py-2 px-6 rounded-lg transition-colors"
-    //                     >
-    //                         Отправить данные
-    //                     </button>
-    //                 </form>
-    //
-    //                 {/* Блок с результатом */}
-    //                 {postResult && (
-    //                     <div className="mt-6 p-4 bg-green-50 rounded-lg">
-    //                         <p className="text-green-600 font-medium">
-    //                             ✅ {postResult.message}
-    //                         </p>
-    //                         <p className="mt-2 text-green-800">
-    //                             ID: <span className="font-mono">{postResult.id}</span>
-    //                         </p>
-    //                     </div>
-    //                 )}
-    //
-    //                 {postError && (
-    //                     <div className="mt-6 p-4 bg-red-50 rounded-lg">
-    //                         <p className="text-red-600 font-medium">
-    //                             ❌ Ошибка: {postError}
-    //                         </p>
-    //                     </div>
-    //                 )}
-    //             </div>
-    //
-    //
-    //
-    //
-    //             {/* Поиск и редактирование документа */}
-    //             <div className="bg-white rounded-xl shadow-lg p-6">
-    //                 <h2 className="text-2xl font-bold mb-4">Редактировать документ</h2>
-    //
-    //                 <div className="space-y-4">
-    //                     <div className="flex gap-4">
-    //                         <input
-    //                             type="text"
-    //                             value={docId}
-    //                             onChange={(e) => setDocId(e.target.value)}
-    //                             placeholder="Введите ID документа"
-    //                             className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-    //                         />
-    //                         <button
-    //                             type="button"
-    //                             onClick={handleFindDoc}
-    //                             className="bg-blue-600 hover:bg-blue-700 text-white
-    //                                 font-medium py-2 px-6 rounded-lg transition-colors"
-    //                         >
-    //                             Найти
-    //                         </button>
-    //                     </div>
-    //
-    //                     {editData && (
-    //                         <form onSubmit={handleUpdateDoc} className="space-y-4">
-    //                             <textarea
-    //                                 value={editData}
-    //                                 onChange={(e) => setEditData(e.target.value)}
-    //                                 className="w-full h-70 px-3 py-2 border rounded-lg
-    //                                     font-mono text-sm focus:ring-2 focus:ring-blue-500
-    //                                     focus:border-blue-500 resize-none"
-    //                             />
-    //                             <button
-    //                                 type="submit"
-    //                                 className="bg-orange-600 hover:bg-orange-700 text-white
-    //                                     font-medium py-2 px-6 rounded-lg transition-colors"
-    //                             >
-    //                                 Сохранить изменения
-    //                             </button>
-    //                         </form>
-    //                     )}
-    //
-    //                     {/* Результаты редактирования */}
-    //                     {editResult && (
-    //                         <div className="mt-4 p-4 bg-green-50 rounded-lg">
-    //                             <p className="text-green-600 font-medium">
-    //                                 ✅ {editResult.message}
-    //                             </p>
-    //                             <pre className="mt-2 text-green-800 overflow-x-auto">
-    //                                 {JSON.stringify(editResult.data, null, 2)}
-    //                             </pre>
-    //                         </div>
-    //                     )}
-    //
-    //                     {editError && (
-    //                         <div className="mt-4 p-4 bg-red-50 rounded-lg">
-    //                             <p className="text-red-600 font-medium">
-    //                                 ❌ Ошибка: {editError}
-    //                             </p>
-    //                         </div>
-    //                     )}
-    //                 </div>
-    //             </div>
-    //
-    //
-    //             {/* Удаление документа */}
-    //             <div className="bg-white rounded-xl shadow-lg p-6">
-    //                 <h2 className="text-2xl font-bold mb-4">Удалить документ</h2>
-    //
-    //                 <form onSubmit={handleDeleteDoc} className="space-y-4">
-    //                     <div className="flex gap-4">
-    //                         <input
-    //                             type="text"
-    //                             value={deleteDocId}
-    //                             onChange={(e) => setDeleteDocId(e.target.value)}
-    //                             placeholder="Введите ID документа"
-    //                             className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-red-500"
-    //                         />
-    //                         <button
-    //                             type="submit"
-    //                             className="bg-red-600 hover:bg-red-700 text-white
-    //                                 font-medium py-2 px-6 rounded-lg transition-colors"
-    //                         >
-    //                             Удалить
-    //                         </button>
-    //                     </div>
-    //
-    //                     {/* Результаты удаления */}
-    //                     {deleteResult && (
-    //                         <div className="mt-4 p-4 bg-green-50 rounded-lg">
-    //                             <p className="text-green-600 font-medium">
-    //                                 ✅ {deleteResult.message}
-    //                             </p>
-    //                             <p className="mt-2 text-green-800">
-    //                                 Удаленный ID: <span className="font-mono">{deleteResult.id}</span>
-    //                             </p>
-    //                         </div>
-    //                     )}
-    //
-    //                     {deleteError && (
-    //                         <div className="mt-4 p-4 bg-red-50 rounded-lg">
-    //                             <p className="text-red-600 font-medium">
-    //                                 ❌ Ошибка: {deleteError}
-    //                             </p>
-    //                         </div>
-    //                     )}
-    //                 </form>
-    //             </div>
-    //
-    //         </div>
-    //     </div>
-    //
-    // )
 
     return (
         <div className="p-8">
@@ -490,9 +322,7 @@ export default function Page1() {
                                     </div>
                                     <div>
                                         <p className="text-green-600 font-semibold">{editResult.message}</p>
-                                        <pre className="mt-2 text-green-700 bg-green-100 p-3 rounded-lg overflow-x-auto">
-                                        {JSON.stringify(editResult.data, null, 2)}
-                                    </pre>
+
                                     </div>
                                 </div>
                             </div>
@@ -519,22 +349,23 @@ export default function Page1() {
                         Удалить документ
                     </h2>
 
-                    <form onSubmit={handleDeleteDoc} className="space-y-6">
+                    <form onSubmit={(e) => {
+                        e.preventDefault()
+                        if (deleteDocId.length !== 0) {
+                            setShowConfirmModal(true)
+                        }
+                    }} className="space-y-6">
                         <div className="flex gap-4">
                             <input
                                 type="text"
                                 value={deleteDocId}
                                 onChange={(e) => setDeleteDocId(e.target.value)}
                                 placeholder="Введите ID документа"
-                                className="flex-1 px-5 py-3 border-2 rounded-xl focus:ring-4
-                                focus:ring-red-200 focus:border-red-500 border-gray-200
-                                shadow-sm transition-all duration-200"
+                                className="flex-1 px-5 py-3 border-2 rounded-xl focus:ring-4 focus:ring-red-200 focus:border-red-500 border-gray-200 shadow-sm transition-all duration-200"
                             />
                             <button
                                 type="submit"
-                                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700
-                                text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300
-                                transform hover:scale-[1.02] shadow-lg hover:shadow-xl active:scale-95"
+                                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl active:scale-95"
                             >
                                 Удалить документ
                             </button>
@@ -572,6 +403,29 @@ export default function Page1() {
                             </div>
                         )}
                     </form>
+
+                    {showConfirmModal && (
+                        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl border">
+                                <h3 className="text-xl font-bold text-gray-900 mb-4">Подтвердите удаление</h3>
+                                <p className="text-gray-600 mb-6">Вы уверены, что хотите удалить документ с ID: <span className="font-mono">{deleteDocId}</span>?</p>
+                                <div className="flex justify-end gap-4">
+                                    <button
+                                        className="px-5 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 transition"
+                                        onClick={() => setShowConfirmModal(false)}
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        className="px-5 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition"
+                                        onClick={handleDeleteDoc}
+                                    >
+                                        Удалить
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
 

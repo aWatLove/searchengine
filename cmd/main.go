@@ -10,6 +10,7 @@ import (
 	"searchengine/internal/config"
 	"searchengine/internal/filter"
 	"searchengine/internal/index"
+	"searchengine/internal/metrics"
 	"searchengine/internal/rank"
 	"searchengine/internal/search"
 	"searchengine/internal/server"
@@ -30,6 +31,7 @@ func initLogger() {
 
 func main() {
 	initLogger()
+	go metrics.RecordSysMetrics()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)

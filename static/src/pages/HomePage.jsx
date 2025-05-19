@@ -414,7 +414,6 @@ export default function HomePage() {
                                 >
                                     <option value="">Без сортировки</option>
                                     <option value="price">Цена</option>
-                                    <option value="rating">Рейтинг</option>
                                 </select>
                                 <select
                                     value={sortOrder}

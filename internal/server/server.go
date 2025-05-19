@@ -92,7 +92,7 @@ func (s *Server) initRoutsServerPrivate() http.Handler {
 	privateMux.Handle("/metrics", promhttp.Handler())
 	privateMux.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) { writer.WriteHeader(http.StatusOK) })
 
-	return privateMux
+	return corsMiddlewareStd(privateMux)
 }
 
 func (s *Server) Stop(ctx context.Context) error {
@@ -112,32 +112,38 @@ func (s *Server) Stop(ctx context.Context) error {
 	}
 }
 
+func corsMiddlewareStd(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, HEAD, PUT, DELETE, PATCH, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Authorization, X-Requested-With")
+		// w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Max-Age", "3600")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func corsMiddleware(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
-		// Разрешаем запросы с любого origin (для продакшена укажите конкретные домены)
 		ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
 
-		// Разрешаем методы
 		ctx.Response.Header.Set("Access-Control-Allow-Methods",
 			"GET, POST, HEAD, PUT, DELETE, PATCH, OPTIONS")
 
-		// Разрешаем заголовки
 		ctx.Response.Header.Set("Access-Control-Allow-Headers",
 			"Origin, Content-Type, Accept, Authorization, X-Requested-With")
 
-		// Разрешаем куки и авторизацию (если нужно)
-		// ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
-
-		// Максимальное время кеширования предварительных запросов
 		ctx.Response.Header.Set("Access-Control-Max-Age", "3600")
 
-		// Обработка предварительного OPTIONS-запроса
 		if string(ctx.Method()) == "OPTIONS" {
 			ctx.SetStatusCode(fasthttp.StatusNoContent)
 			return
 		}
 
-		// Передаем запрос следующему обработчику
 		next(ctx)
 	}
 }

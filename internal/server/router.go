@@ -1,10 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/valyala/fasthttp"
 	"searchengine/internal/common/utils"
+	"searchengine/internal/metrics"
 	"strings"
+	"time"
 	"unicode/utf8"
 )
 
@@ -67,7 +70,7 @@ func (s *Server) Router(ctx *fasthttp.RequestCtx) {
 }
 
 func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
-
+	t := time.Now()
 	defer utils.Recovery("SERVER")
 
 	method, body := string(ctx.Method()), ctx.Request.Body()
@@ -138,10 +141,14 @@ func (s *Server) Handler(path string, ctx *fasthttp.RequestCtx) {
 	}
 
 	if err != nil {
+		metrics.ErrorRPS(path, method)
 		resp = []byte(err.Error())
 	}
 	setStatusCode(ctx, err)
 	if resp != nil {
 		ctx.Response.SetBody(resp)
 	}
+
+	metrics.RequestRPS(path, method, fmt.Sprintf("%d", ctx.Response.StatusCode()))
+	metrics.RequestDuration(path, method, time.Since(t).Seconds())
 }

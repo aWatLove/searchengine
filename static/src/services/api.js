@@ -17,6 +17,10 @@ const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
     timeout: 5000,
 })
+const apiPrivate = axios.create({
+    baseURL: import.meta.env.VITE_API_PRIVATE_URL || 'http://localhost:3001',
+    timeout: 5000,
+})
 
 export default {
     getAllData: () => api.get('/api/v1/getAllDoc'),
@@ -52,10 +56,5 @@ export default {
     listLogs: () => api.get('/api/v1/listlogs'),
     getLog: (file) => api.get(`/api/v1/log?file=${file}`),
 
-    getMetrics: async (metricName, timeRange) => {
-        // Пример реализации запроса к вашему бэкенду
-        return axios.get(`/metrics/${metricName}`, {
-            params: { range: timeRange }
-        });
-    },
+    getRawMetrics: () => apiPrivate.get('/metrics'),
 }
