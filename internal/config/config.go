@@ -32,6 +32,14 @@ type Config struct {
 
 	// logs
 	LogsDir string `envconfig:"LOGS_DIR" required:"true"`
+
+	// subscriber
+	EnableNatsSubscriber  bool
+	NatsURL               string `envconfig:"NATS_URL"`
+	NatsSubject           string `envconfig:"NATS_SUBJECT"`
+	EnableKafkaSubscriber bool
+	KafkaURL              string `envconfig:"KAFKA_URL"`
+	KafkaTopic            string `envconfig:"KAFKA_TOPIC"`
 }
 
 func LoadConfig() *Config {
@@ -66,6 +74,13 @@ func LoadConfig() *Config {
 		log.Fatalln("[CONFIG][ERROR] error while loading rank config:", err)
 	}
 
+	if cfg.NatsURL != "" && cfg.NatsSubject != "" {
+		cfg.EnableNatsSubscriber = true
+	}
+	if cfg.KafkaURL != "" && cfg.KafkaTopic != "" {
+		cfg.EnableKafkaSubscriber = true
+	}
+
 	cfg.PrintConfig()
 
 	return &cfg
@@ -83,6 +98,19 @@ func (c *Config) PrintConfig() {
 	log.Println("DATE_LAYOUT.................... ", c.DateLayout)
 	log.Println("______________RANK_____________ ")
 	log.Println("RANK_CONFIG_PATH............... ", c.RankConfigPath)
+	if c.EnableNatsSubscriber || c.EnableKafkaSubscriber {
+		log.Println("___________SUBSCRIBER__________ ")
+	}
+	if c.EnableNatsSubscriber {
+		log.Println("NATS_ENABLED................ ", fmt.Sprintf("%v", c.EnableNatsSubscriber))
+		log.Println("NATS_URL.................... ", c.NatsURL)
+		log.Println("NATS_SUBJECT................ ", c.NatsSubject)
+	}
+	if c.EnableKafkaSubscriber {
+		log.Println("KAFKA_ENABLED............. ", fmt.Sprintf("%v", c.EnableKafkaSubscriber))
+		log.Println("KAFKA_URL................. ", c.KafkaURL)
+		log.Println("KAFKA_TOPIC................ ", c.KafkaTopic)
+	}
 	log.Println("_____________SERVER____________ ")
 	log.Println("PRIVATE_PORT................... ", c.PrivatePort)
 	log.Println("PUBLIC_PORT.................... ", c.PublicPort)

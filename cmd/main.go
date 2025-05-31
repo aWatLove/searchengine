@@ -14,6 +14,7 @@ import (
 	"searchengine/internal/rank"
 	"searchengine/internal/search"
 	"searchengine/internal/server"
+	"searchengine/internal/subscriber"
 	"syscall"
 	"time"
 )
@@ -61,6 +62,12 @@ func main() {
 	searchCli := search.NewSearchClient(indexCLi, rankCli, filterCli)
 	// ====================
 
+	// ====== Subscriber ======
+	ctxSubscriber, cancelSubscriber := context.WithCancel(context.Background())
+	sub := subscriber.New(cfg, indexCLi)
+	sub.Start(ctxSubscriber)
+	// ========================
+
 	// ====== Server ======
 	log.Println("[SERVICE] START SERVER")
 	srv := server.New(cfg, indexCLi, searchCli, filterCli)
@@ -75,4 +82,5 @@ func main() {
 	if err != nil {
 		log.Fatalln("[SERVER][ERROR] error while stopping: ", err)
 	}
+	cancelSubscriber()
 }

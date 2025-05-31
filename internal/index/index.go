@@ -16,7 +16,7 @@ import (
 type Index struct {
 	cfg *config.Config
 
-	iCfg *config.IndexConfig
+	ICfg *config.IndexConfig
 
 	bIndex bleve.Index
 
@@ -70,7 +70,7 @@ func New(cfg *config.Config) *Index {
 	return &Index{
 		cfg:       cfg,
 		bIndex:    bleveIndex,
-		iCfg:      cfg.IndexCfg,
+		ICfg:      cfg.IndexCfg,
 		mu:        new(sync.RWMutex),
 		isBuilded: true,
 	}
@@ -86,7 +86,7 @@ func (idx *Index) Add(id string, record interface{}) error {
 // AddDocument добавляет документ в индекс после валидации
 func (i *Index) AddDocument(docID string, document map[string]interface{}) error {
 	// Валидация документа
-	err := validate.ValidateDocument(i.iCfg, document)
+	err := validate.ValidateDocument(i.ICfg, document)
 	if err != nil {
 		return fmt.Errorf("документ не прошел валидацию: %v", err)
 	}
@@ -111,7 +111,7 @@ func (i *Index) Delete(docID string) error {
 
 func (i *Index) Update(docID string, document map[string]interface{}) error {
 	// Валидация документа
-	err := validate.ValidateDocument(i.iCfg, document)
+	err := validate.ValidateDocument(i.ICfg, document)
 	if err != nil {
 		return fmt.Errorf("документ не прошел валидацию: %v", err)
 	}
@@ -376,6 +376,7 @@ func (i *Index) RebuildIndex() error {
 
 	log.Printf("Reindexing complete. Total documents reindexed: %d\n", count)
 	log.Printf("Complete rebuilding index\n")
+	i.ICfg = i.cfg.IndexCfg
 	i.isBuilded = true
 	return nil
 }

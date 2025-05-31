@@ -46,9 +46,9 @@
    "sortable": true
   },
   {
-   "name": "sex",
+   "name": "gender",
    "type": "string",
-   "searchable": false,
+   "searchable": true,
    "filterable": true
   },
   {
