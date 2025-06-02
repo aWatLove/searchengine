@@ -1,1 +1,442 @@
-[{"category":"Обувь","range":[{"name":"price","type":"number","from_value":"100","to_value":"10000"}],"multi-select":[{"name":"brand","value":["adidas","nike","reebok"]},{"name":"color","value":["белый","черный","красный","синий"]}],"one-select":[{"name":"gender","value":["unisex","male","female"]}],"bool-select":[{"name":"top-seller"}]},{"category":"Женское","range":[{"name":"price","type":"number","from_value":"1","to_value":"100000"}],"multi-select":[{"name":"brand","value":["gucci","sanlaran","chanel"]},{"name":"color","value":["white","black","red","blue","green"]}],"one-select":[],"bool-select":[]},{"category":"Мужское","range":[{"name":"price","type":"number","from_value":"100","to_value":"10000"}],"multi-select":[{"name":"brand","value":["adidas","nike","reebok"]},{"name":"color","value":["красная","синяя","черная"]}],"one-select":[{"name":"sex","value":["унисекс","мужской"]}],"bool-select":[{"name":"top-seller"}]}]
+[
+  {
+    "category": "Аксессуары",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Верхняя одежда",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Детское",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Женское",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Мужское",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Нижнее белье",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Обувь",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Одежда для дома",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Спорт",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  },
+  {
+    "category": "Сумки",
+    "range": [
+      {
+        "name": "price",
+        "type": "number",
+        "from_value": "50",
+        "to_value": "5000"
+      }
+    ],
+    "multi-select": [
+      {
+        "name": "brand",
+        "value": [
+          "Stone Island", "Nike", "Adidas", "Puma", "Zara",
+          "H&M", "Reebok", "New Balance", "Levi’s", "Gucci",
+          "Prada", "Dior", "Under Armour", "Asics", "The North Face"
+        ]
+      },
+      {
+        "name": "color",
+        "value": [
+          "синяя", "красная", "зеленая", "черная", "белая",
+          "желтая", "розовая", "фиолетовая", "оранжевая", "серая",
+          "коричневая", "бежевая"
+        ]
+      }
+    ],
+    "one-select": [
+      {
+        "name": "gender",
+        "value": [
+          "унисекс",
+          "женский",
+          "мужской"
+        ]
+      }
+    ],
+    "bool-select": [
+      {
+        "name": "top-seller"
+      }
+    ]
+  }
+]

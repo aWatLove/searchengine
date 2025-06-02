@@ -89,7 +89,7 @@ func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (query.Quer
 		for _, ms := range filters.MultiSelect {
 			msValues := make([]query.Query, 0, len(ms.Value))
 			for _, val := range ms.Value {
-				msf := bleve.NewTermQuery(val)
+				msf := bleve.NewTermQuery(strings.ToLower(val))
 				msf.SetField(ms.Name)
 				msValues = append(msValues, msf)
 			}
@@ -107,7 +107,7 @@ func (fc *FilterClient) ApplyFilters(filters *request.FilterRequest) (query.Quer
 		// one-select filters
 		osFilters := make([]query.Query, 0, len(filters.OneSelect))
 		for _, o := range filters.OneSelect {
-			osf := bleve.NewTermQuery(o.Value)
+			osf := bleve.NewTermQuery(strings.ToLower(o.Value))
 			osf.SetField(o.Name)
 			osFilters = append(osFilters, osf)
 		}
