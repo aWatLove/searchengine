@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  searchengine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+
+  frontend:
+    build:
+      context: ./static        # указываем папку с нашим Dockerfile
+      dockerfile: Dockerfile     # Dockerfile внутри frontend/
+    container_name: frontend
+    ports:
+      - "3000:80"                # внутри контейнера nginx слушает 80, маппим на 3000 хоста
+    depends_on:
+      - searchengine                  # ждём, пока бэкенд поднимется (при необходимости)
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
